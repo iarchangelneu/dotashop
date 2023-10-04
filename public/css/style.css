@@ -1,0 +1,62 @@
+@import url('https://fonts.cdnfonts.com/css/coolvetica-2');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/kharkiv-tone');
+
+:root {
+    --col: 'Coolvetica', sans-serif;
+    --mon: 'Montserrat Alternates', sans-serif;
+    --card-height: 300px;
+    --card-width: calc(var(--card-height) / 1.5);
+    --header-height: 3rem;
+    --nav-width: 68px;
+    --first-color: #4723D9;
+    --first-color-light: #AFA5D9;
+    --white-color: #F7F6FB;
+    --body-font: 'Nunito', sans-serif;
+    --normal-font-size: 1rem;
+    --z-fixed: 100;
+    --kha: 'Kharkiv Tone', sans-serif;
+}
+
+.collapse {
+    display: none;
+    transition: height 0.3s ease-in-out;
+    /* Добавляем анимацию для высоты */
+}
+
+.collapse.show {
+    display: block;
+}
+
+body {
+    overflow-x: hidden;
+    background: #160E21;
+}
+
+body::-webkit-scrollbar {
+    width: 0;
+}
+
+html {
+    scroll-behavior: smooth !important;
+
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.ql-toolbar.ql-snow {
+    border: 2px solid #000;
+}
+
+.swiper-button-disabled {
+    opacity: 0.4 !important;
+    transition: all .3s ease;
+}
+
+h1, h2, h3, h4, h5, h6, span, p, a, small, div, li {
+    font-variant-numeric: lining-nums proportional-nums !important;
+}
