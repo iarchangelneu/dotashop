@@ -1,6 +1,6 @@
 <template>
     <div class="page">
-        <h1>магазин</h1>
+        <h1>инвентарь</h1>
 
         <div class="filters">
             <div class="input-group">
@@ -9,6 +9,7 @@
                 </div>
                 <input type="text" class="form-control" placeholder="Поиск по товарам" aria-describedby="basic-addon1">
             </div>
+
             <div class="buttons">
                 <button @click.stop="toggleFilter">фильтр</button>
                 <button @click.stop="toggleSort">сортировка</button>
@@ -91,54 +92,27 @@
         </div>
 
         <div class="catalog__body">
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
+            <div class="catalog__item green">
+                <img src="@/assets/img/catalog1.png" class="main" alt="">
                 <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
+                <div class="sale">
+                    <div>
+                        <div class="saleme">
+                            <img src="@/assets/img/sale.svg" alt="">
+                            <img src="@/assets/img/salebanner.svg" class="banner" alt="" data-toggle="modal"
+                                data-target="#modalFirst">
+                        </div>
+                        <img src="@/assets/img/salesteam.svg" data-toggle="modal" data-target="#steamModal" alt="">
+                    </div>
+
                     <span>19 800 ₸</span>
                 </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
+            </div>
         </div>
 
-        <div class="text-center">
-            <button ref="showmore">Показать еще</button>
-        </div>
     </div>
+    <ModalFirst></ModalFirst>
+    <SteamModal></SteamModal>
 </template>
 <script>
 export default {
@@ -181,10 +155,10 @@ export default {
 </script>
 <script setup>
 useSeoMeta({
-    title: 'Каталог | DotaShop',
-    ogTitle: 'Каталог | DotaShop',
-    description: 'Каталог | DotaShop',
-    ogDescription: 'Каталог | DotaShop',
+    title: 'Инвентарь | DotaShop',
+    ogTitle: 'Инвентарь | DotaShop',
+    description: 'Инвентарь | DotaShop',
+    ogDescription: 'Инвентарь | DotaShop',
 })
 </script>
 <style lang="scss" scoped>
@@ -243,7 +217,41 @@ useSeoMeta({
             background: linear-gradient(90deg, #24212B 0%, rgba(36, 33, 43, 0.65) 100%);
             padding: 10px;
 
-            img {
+            .sale {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                div {
+                    display: flex;
+                    gap: 20px;
+                    position: relative;
+
+                    img {
+                        cursor: pointer;
+                    }
+
+                    .saleme:hover .banner {
+                        transform: scale(1) !important;
+                    }
+
+                    .saleme {
+                        position: relative;
+                    }
+
+                    .banner {
+                        position: absolute;
+                        left: -250%;
+                        top: -300%;
+                        transform: scale(0);
+                        transition: all .3s ease;
+                    }
+                }
+
+
+            }
+
+            .main {
                 width: 100%;
                 height: 154px;
                 object-fit: cover;
@@ -510,8 +518,6 @@ useSeoMeta({
             color: #fff;
             box-shadow: none;
 
-
-
             &::placeholder {
                 color: #fff;
             }
@@ -578,5 +584,4 @@ useSeoMeta({
     @media (max-width: 1024px) {
         margin-bottom: 22px !important;
     }
-}
-</style>
+}</style>

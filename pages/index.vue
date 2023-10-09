@@ -367,11 +367,14 @@
             <h1>как это работает?</h1>
             <img src="@/assets/img/howbg.png" class="howbg" alt="">
 
-            <div class="how__body">
+            <div class="how__body pc">
                 <div>
                     <img src="@/assets/img/how.png" class="img-fluid howitem" alt="">
                     <img src="@/assets/img/neon.svg" alt="" class="neon img-fluid">
                 </div>
+            </div>
+            <div class="how__body mob">
+                <img src="@/assets/img/howmob.svg" alt="">
             </div>
         </div>
         <a name="faq"></a>
@@ -527,7 +530,16 @@ useSeoMeta({
 .page {
     padding: 130px 52px 87px 150px;
 
+    @media (max-width: 1024px) {
+        padding: 150px 20px 70px;
+    }
+
     .faq {
+
+        @media (max-width: 1024px) {
+            margin-top: -70px;
+        }
+
         .faq__body {
             display: flex;
             gap: 24px;
@@ -560,7 +572,7 @@ useSeoMeta({
                         justify-content: space-between;
                         align-items: center;
                         gap: 20px;
-                        height: 42px;
+                        height: auto;
 
                     }
 
@@ -589,6 +601,10 @@ useSeoMeta({
 
             .faq__right {
                 width: 100%;
+
+                @media (max-width: 1024px) {
+                    display: none;
+                }
             }
         }
 
@@ -603,6 +619,11 @@ useSeoMeta({
             font-family: var(--col);
             color: #fff;
             margin: 0 0 30px;
+
+            @media (max-width: 1024px) {
+                font-size: 20px;
+                margin: 0 0 20px;
+            }
         }
     }
 
@@ -614,11 +635,35 @@ useSeoMeta({
             position: absolute;
             top: -20%;
             left: 10%;
+
+            @media (max-width: 1024px) {
+                display: none;
+            }
+        }
+
+        .mob {
+            display: none !important;
+
+            @media (max-width: 1024px) {
+                display: flex !important;
+
+                img {
+                    width: 100%;
+                }
+            }
+        }
+
+        .pc {
+            @media (max-width: 1024px) {
+                display: none !important;
+            }
         }
 
         .how__body {
             display: flex;
             justify-content: center;
+
+
 
             div {
                 position: relative;
@@ -629,6 +674,7 @@ useSeoMeta({
                 }
 
                 .neon {
+                    max-width: 100%;
                     position: absolute;
                     left: 20%;
                     top: 8%;
@@ -673,11 +719,19 @@ useSeoMeta({
         margin-top: 60px;
         position: relative;
 
+        @media (max-width: 1024px) {
+            margin-top: 30px;
+        }
+
         .abg {
             position: absolute;
             top: -20%;
             left: 20%;
             z-index: 1;
+
+            @media (max-width: 1024px) {
+                display: none;
+            }
         }
 
         .about__body {
@@ -687,12 +741,29 @@ useSeoMeta({
             gap: 20px;
             margin-top: 30px;
 
+            @media (max-width: 1600px) {
+                img {
+                    max-width: 50%;
+                }
+
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            @media (max-width: 1024px) {
+                margin-top: 20px;
+            }
+
             .about__right {
                 z-index: 2;
                 margin-top: 80px;
                 display: flex;
                 align-items: flex-end;
                 gap: 20px;
+
+                @media (max-width: 1024px) {
+                    margin-top: 0;
+                }
 
                 p {
                     font-size: 16px;
@@ -703,13 +774,35 @@ useSeoMeta({
                     color: #C8C8C8;
                     margin: 0;
                     max-width: 427px;
+
+                    @media (max-width: 1024px) {
+                        max-width: 100%;
+                    }
+                }
+
+                @media (max-width: 1024px) {
+                    img {
+                        display: none;
+                    }
                 }
             }
 
             .about__left {
                 z-index: 2;
                 display: flex;
+                align-items: flex-start;
                 gap: 20px;
+
+                @media (max-width: 1024px) {
+                    flex-direction: column;
+                    gap: 15px;
+
+                    img {
+                        max-width: 100%;
+                        width: 100%;
+                        object-fit: cover;
+                    }
+                }
 
                 p {
                     font-size: 16px;
@@ -720,6 +813,10 @@ useSeoMeta({
                     color: #C8C8C8;
                     margin: 0 0 30px;
                     max-width: 404px;
+
+                    @media (max-width: 1024px) {
+                        max-width: 100%;
+                    }
                 }
 
                 a {
@@ -756,11 +853,19 @@ useSeoMeta({
             font-family: var(--col);
             color: #fff;
             margin: 0;
+
+            @media (max-width: 1024px) {
+                font-size: 20px;
+            }
         }
     }
 
     .sales {
         z-index: 2;
+
+        @media (max-width: 1024px) {
+            margin-top: 30px;
+        }
 
         .sales__slider {
             z-index: 2;
@@ -786,10 +891,15 @@ useSeoMeta({
                 max-width: 250px;
                 text-decoration: none;
 
+                @media (max-width: 1024px) {
+                    max-width: 100%;
+                }
+
                 .image {
                     img {
-                        width: 225px;
+                        width: 100%;
                         height: 130px;
+                        object-fit: cover;
                     }
                 }
 
@@ -880,6 +990,10 @@ useSeoMeta({
             font-family: var(--col);
             color: #fff;
             margin: 0 0 10px;
+
+            @media (max-width: 1024px) {
+                font-size: 20px;
+            }
         }
 
         p {
@@ -897,8 +1011,17 @@ useSeoMeta({
         padding: 0 62px 0 81px;
         height: 100vh;
 
+        @media (max-width: 1024px) {
+            padding: 0;
+            height: auto;
+        }
+
         .links {
             margin-top: 50px;
+
+            @media (max-width: 1024px) {
+                margin-top: 20px;
+            }
 
             p {
                 font-size: 20px;
@@ -908,12 +1031,20 @@ useSeoMeta({
                 font-family: var(--mon);
                 color: #fff;
                 margin: 0 0 30px;
+
+                @media (max-width: 1024px) {
+                    font-size: 16px;
+                }
             }
 
             .buttons {
                 display: flex;
                 justify-content: center;
                 gap: 30px;
+
+                @media (max-width: 1024px) {
+                    gap: 20px;
+                }
 
                 a {
                     z-index: 10;
@@ -929,6 +1060,11 @@ useSeoMeta({
                     border: 1px transparent;
                     border-radius: 10px;
                     transition: all .3s ease;
+
+                    @media (max-width: 1024px) {
+                        padding: 10px 0;
+                        flex: 1;
+                    }
 
                     &:first-child {
                         background: #5D5FEF;
@@ -956,6 +1092,24 @@ useSeoMeta({
             justify-content: center;
             margin-top: 70px;
             gap: 30px;
+
+            @media (max-width: 1024px) {
+                a {
+                    &:nth-child(n + 3) {
+                        display: none;
+                    }
+                }
+            }
+
+            @media (max-width: 600px) {
+                a {
+                    &:nth-child(n + 2) {
+                        display: none;
+                    }
+                }
+
+                margin-top: 10px;
+            }
         }
 
         .bg {
@@ -977,6 +1131,10 @@ useSeoMeta({
             display: flex;
             gap: 10px;
 
+            @media (max-width: 1024px) {
+                font-size: 24px;
+            }
+
         }
 
         .rotating-text {
@@ -990,6 +1148,11 @@ useSeoMeta({
             height: 40px;
             top: 50%;
             margin-top: -20px;
+
+            @media (max-width: 1024px) {
+                margin-left: -50px;
+            }
+
         }
 
         .rotating-text-pre,
@@ -1051,8 +1214,8 @@ useSeoMeta({
         }
 
         .cardd {
-            width: 343px;
-            height: 418px;
+            width: 100%;
+            height: 425px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -1064,7 +1227,7 @@ useSeoMeta({
 
         .cover-image {
             width: 100%;
-            max-height: 418px;
+            max-height: 425px;
             object-fit: cover;
             border-radius: 7.5px;
         }

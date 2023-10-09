@@ -1,5 +1,5 @@
 <template>
-    <footer>
+    <footer v-if="!hideFooterOnPages.includes($route.name)">
         <hr>
         <div class="footer__body">
             <img src="@/assets/img/footerlogo.svg" alt="">
@@ -29,21 +29,63 @@
         </div>
     </footer>
 </template>
+<script>
+export default {
+    data() {
+        return {
+            hideFooterOnPages: ['login', 'register'],
+        }
+    }
+}
+</script>
 <style lang="scss" scoped>
 footer {
     padding: 0 10.417vw 50px;
+
+    @media (max-width: 1600px) {
+        padding: 0 50px 50px 10.417vw;
+    }
+
+    @media (max-width: 1024px) {
+        padding: 0 20px 40px;
+    }
+
+    img {
+        @media (max-width: 1400px) {
+            max-width: 20%;
+        }
+
+        @media (max-width: 1024px) {
+            max-width: 100%;
+        }
+    }
 
     .footer__body {
         margin-top: 50px;
         display: flex;
         align-items: flex-start;
         gap: 6.458vw;
+
+        @media (max-width: 1600px) {
+            gap: 50px;
+        }
+
+        @media (max-width: 1024px) {
+            flex-direction: column;
+            gap: 30px;
+        }
     }
 
     .copyright {
         display: flex;
         gap: 20px;
         margin-top: 39px;
+
+        @media (max-width: 1024px) {
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
         small {
             font-size: 16px;
@@ -59,6 +101,18 @@ footer {
         display: flex;
         gap: 6.979vw;
 
+        @media (max-width: 1600px) {
+            gap: 50px;
+        }
+
+        @media (max-width: 1024px) {
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 380px) {
+            flex-direction: column;
+        }
 
         div {
             display: flex;
@@ -74,11 +128,27 @@ footer {
                 font-family: var(--mon);
                 color: #fff;
                 text-decoration: none;
+
+                @media (max-width: 1600px) {
+                    font-size: 20px;
+
+                }
+
+                @media (max-width: 1024px) {
+                    font-size: 16px;
+
+                }
+
+                @media (max-width: 380px) {
+                    font-size: 14px;
+                }
+
             }
         }
     }
 
     hr {
+        margin-top: 0;
         border-top: 2px solid #fff;
     }
 }
