@@ -25,28 +25,28 @@
                 <NuxtLink to="/catalog" alt="Mythrill" target="_blank">
                     <div class="cardd">
                         <div class="wrapper">
-                            <img src="@/assets/img/cover1.jpg" class="cover-image" />
+                            <img src="@/assets/img/cover2.png" class="cover-image" />
                         </div>
-                        <img src="@/assets/img/text1.png" class="title" />
-                        <img src="@/assets/img/character1.png" class="character" />
+                        <img src="@/assets/img/text2.png" class="title" />
+                        <img src="@/assets/img/character2.png" class="character" />
                     </div>
                 </NuxtLink>
                 <NuxtLink to="/catalog" alt="Mythrill" target="_blank">
                     <div class="cardd">
                         <div class="wrapper">
-                            <img src="@/assets/img/cover1.jpg" class="cover-image" />
+                            <img src="@/assets/img/cover3.png" class="cover-image" />
                         </div>
-                        <img src="@/assets/img/text1.png" class="title" />
-                        <img src="@/assets/img/character1.png" class="character" />
+                        <img src="@/assets/img/text3.png" class="title" />
+                        <img src="@/assets/img/character3.png" class="character" />
                     </div>
                 </NuxtLink>
                 <NuxtLink to="/catalog" alt="Mythrill" target="_blank">
                     <div class="cardd">
                         <div class="wrapper">
-                            <img src="@/assets/img/cover1.jpg" class="cover-image" />
+                            <img src="@/assets/img/cover4.jpg" class="cover-image" />
                         </div>
-                        <img src="@/assets/img/text1.png" class="title" />
-                        <img src="@/assets/img/character1.png" class="character" />
+                        <img src="@/assets/img/text4.png" class="title" />
+                        <img src="@/assets/img/character4.png" class="character" />
                     </div>
                 </NuxtLink>
             </div>
@@ -210,7 +210,7 @@
                             страстных игроков, которые разделяют вашу страсть к этой увлекательной игре. Наша цель — сделать
                             процесс приобретения скинов и оружия в Dota 2 максимально удобным и приятным для вас.</p>
 
-                        <NuxtLink to="/about">Подробнее</NuxtLink>
+                        <!-- <NuxtLink to="/about">Подробнее</NuxtLink> -->
                     </div>
                     <img src="@/assets/img/about1.png" alt="">
                 </div>
@@ -427,11 +427,10 @@ export default {
                 { id: 5, isOpen: false, question: 'Как продать или вывести предмет с сайта?' },
             ],
             words: [
-                { class: 'word word1', letters: [], text: "Инвокера?" },
-                { class: 'word word2', letters: [], text: "Валеру?" },
-                { class: 'word word3', letters: [], text: "Сережу?" },
-                { class: 'word word4', letters: [], text: "Илью?" },
-                { class: 'word word5', letters: [], text: "Семена?" }
+                { class: 'word word1', letters: [], text: "SF?" },
+                { class: 'word word2', letters: [], text: "Траксу?" },
+                { class: 'word word3', letters: [], text: "Легионку?" },
+                { class: 'word word4', letters: [], text: "Инвокера?" },
             ],
             currentWordIndex: 0,
             breakpoints: {
@@ -1214,8 +1213,8 @@ useSeoMeta({
         }
 
         .cardd {
-            width: 100%;
-            height: 425px;
+            width: 17.865vw;
+            height: 22.135vw;
             position: relative;
             display: flex;
             justify-content: center;
@@ -1223,13 +1222,23 @@ useSeoMeta({
             padding: 0 36px;
             perspective: 2500px;
             // margin: 0 50px;
+
+            @media (max-width: 1024px) {
+                width: 350px;
+                height: 425px;
+            }
         }
 
         .cover-image {
             width: 100%;
-            max-height: 425px;
+            height: 22.135vw;
             object-fit: cover;
             border-radius: 7.5px;
+
+            @media (max-width: 1024px) {
+                width: 350px;
+                height: 425px;
+            }
         }
 
         .wrapper {
