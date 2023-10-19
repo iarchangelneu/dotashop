@@ -44,7 +44,7 @@
                             srcset="" />
                     </div>
                 </div>
-
+                <small>{{ error }}</small>
                 <button @click="register()">Регистрация</button>
 
                 <div class="text-center">
@@ -66,6 +66,7 @@ export default {
             email: '',
             password: '',
             repeat__password: '',
+            error: '',
         }
     },
     methods: {
@@ -106,7 +107,7 @@ export default {
                     }
                 })
                 .catch((error) => {
-                    this.error = error.response.data.detail
+                    this.error = error.response.data.username[0]
                     console.log(error.response);
                 });
 

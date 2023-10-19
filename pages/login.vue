@@ -24,7 +24,7 @@
                             srcset="" />
                     </div>
                 </div>
-
+                <small>{{ error }}</small>
                 <div class="btns">
                     <button @click="login()">Войти</button>
                     <button class="steam" @click="loginSteam()">
@@ -52,6 +52,7 @@ export default {
             showPassword: false,
             email: '',
             password: '',
+            error: '',
         }
     },
     methods: {
@@ -78,7 +79,7 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error);
-                    // this.error = error.response.data.non_field_errors.toString()
+                    this.error = error.response.data.non_field_errors.toString()
                 });
         },
         loginSteam() {
@@ -137,6 +138,12 @@ useSeoMeta({
         justify-content: center;
         align-items: center;
         padding: 50px 20px 50px;
+    }
+
+    small {
+        color: red;
+        font-family: var(--mon);
+        font-size: 14px;
     }
 
     .form {
