@@ -152,6 +152,12 @@ useSeoMeta({
         padding: 50px 20px 50px;
     }
 
+    small {
+        color: red;
+        font-family: var(--mon);
+        font-size: 14px;
+    }
+
     .form {
         height: 100vh;
         padding: 50px 54px 21px;
