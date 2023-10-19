@@ -15,10 +15,10 @@
                 <button @click.stop="toggleSort">сортировка</button>
             </div>
             <div class="sort__body" :class="{ activeFil: sort }">
-                <h2 @click="sortBy('price')">Сначала дешевле</h2>
-                <h2 @click="sortBy('-price')">Сначала дороже</h2>
-                <h2 @click="sortBy('rating')">Полулярное</h2>
-                <h2 @click="sortBy('-rating')">Новое</h2>
+                <h2 @click="sortBy('price'), activeSort = 1" :class="{ activeSort: activeSort == 1 }">Сначала дешевле</h2>
+                <h2 @click="sortBy('-price'), activeSort = 2" :class="{ activeSort: activeSort == 2 }">Сначала дороже</h2>
+                <h2 @click="sortBy('rating'), activeSort = 3" :class="{ activeSort: activeSort == 3 }">Полулярное</h2>
+                <h2 @click="sortBy('-rating'), activeSort = 4" :class="{ activeSort: activeSort == 4 }">Новое</h2>
             </div>
             <div class="filter__body" @click="stopPropagation" :class="{ activeFil: filter }">
                 <div class="w-100">
@@ -64,6 +64,9 @@
         <div class="catalog__body">
             <NuxtLink v-for="item in catalog.results" :key="item.id" :to="'/product/' + item.id" class="catalog__item"
                 :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }">
+                <div class="text-right disc">
+                    <span>-{{ Math.floor(100 - (item.sell_price / item.price * 100)) }}%</span>
+                </div>
                 <img :src="item.img" alt="">
                 <p>{{ item.name }}</p>
                 <div class="price">
@@ -101,6 +104,7 @@ export default {
             selectedCell: '',
             minPrice: null,
             maxPrice: null,
+            activeSort: 0,
         }
     },
     methods: {
@@ -299,6 +303,23 @@ useSeoMeta({
             border-radius: 10px;
             background: linear-gradient(90deg, #24212B 0%, rgba(36, 33, 43, 0.65) 100%);
             padding: 10px;
+            position: relative;
+
+            .disc {
+                position: absolute;
+                background: #292238;
+                right: 3.8%;
+            }
+
+            span {
+                padding: 2px 8px 2px 6px;
+
+                background: var(--Common, linear-gradient(180deg, #B0C3D9 49.79%, rgba(74, 147, 255, 0.69) 100%));
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-family: var(--mon);
+            }
 
             img {
                 width: 100%;
@@ -427,11 +448,17 @@ useSeoMeta({
             border-radius: 10px;
             padding: 20px;
             background: #292238;
+            z-index: 10;
 
             @media (max-width: 1024px) {
                 width: 100%;
                 left: 0;
                 margin-top: 125px;
+            }
+
+            .activeSort {
+                color: #5d5fef;
+
             }
 
             h2 {
@@ -443,6 +470,8 @@ useSeoMeta({
                 font-family: var(--mon);
                 color: #fff;
                 margin: 0 0 20px;
+                cursor: pointer;
+                transition: all .3s ease;
 
                 &:last-child {
                     margin: 0;
@@ -463,6 +492,7 @@ useSeoMeta({
             display: flex;
             gap: 71px;
             width: 670px;
+            z-index: 10;
 
             @media (max-width: 1024px) {
                 flex-direction: column;

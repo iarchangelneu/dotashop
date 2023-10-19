@@ -703,7 +703,7 @@ useSeoMeta({
                 flex-direction: column;
                 max-width: 250px;
                 text-decoration: none;
-                height: 235px;
+                height: 255px;
 
                 @media (max-width: 1024px) {
                     max-width: 100%;
@@ -728,6 +728,7 @@ useSeoMeta({
                 }
 
                 .price {
+                    margin-top: auto;
                     display: flex;
                     justify-content: flex-end;
                     gap: 6px;

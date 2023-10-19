@@ -14,7 +14,7 @@
             <div class="buttons">
                 <button @click="getTrans(), sales = false" v-if="sales">Покупки</button>
                 <button @click="getInventory(), sales = true" v-if="!sales">Инвентарь</button>
-                <button @click="getSteam()" :disabled="!sales">Обновить инвентарь Steam</button>
+                <button @click="getSteam()" :disabled="!sales" ref="update">Обновить инвентарь Steam</button>
             </div>
         </div>z
 
@@ -131,13 +131,14 @@ export default {
             const token = this.getAuthorizationCookie();
 
             axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+            this.$refs.update.innerHTML = 'Загружаем'
 
             axios
                 .get(url)
                 .then((res) => {
                     console.log(res)
                     this.getInventory()
-
+                    this.$refs.update.innerHTML = 'Обновить инвентарь'
                 })
                 .catch((error) => {
                     console.log(error)
