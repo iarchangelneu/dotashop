@@ -2,11 +2,15 @@
     <header v-if="!hideHeaderOnPages.includes($route.name)">
         <div class="header__body">
             <div class="sidebar">
-                <div class="sidebar__body" :class="{ navActive: sideActive }">
+                <div class="sidebar__body" :class="{ navActive: sideActive }" @click="stopPropagation">
                     <div class="link">
-                        <img src="@/assets/img/headerlogo.svg" alt="">
-                        <h1 :class="{ inactive: !sideActive }">DotaShop</h1>
-                        <img src="@/assets/img/burger2.svg" class="closeh" @click="sideActive = !sideActive" alt="">
+                        <NuxtLink to="/">
+                            <img src="@/assets/img/headerlogo.svg" alt="">
+                        </NuxtLink>
+                        <NuxtLink to="/" style="text-decoration: none;">
+                            <h1 class="mb-0" :class="{ inactive: !sideActive }">DotaShop</h1>
+                        </NuxtLink>
+                        <img src="@/assets/img/burger2.svg" class="closeh" @click.stop="toggleMenu" alt="">
                     </div>
                     <NuxtLink to="/" class="navik">
                         <img src="@/assets/img/h1.svg" :class="{ activeimg: $route.path === '/' }" alt="">
@@ -26,7 +30,7 @@
                         <span :class="{ inactive: !sideActive, activeSpan: $route.path === '/sale' }">продажа</span>
                     </NuxtLink>
                 </div>
-                <img src="@/assets/img/burger.svg" v-if="!sideActive" class="open" @click="sideActive = !sideActive" alt="">
+                <img src="@/assets/img/burger.svg" v-if="!sideActive" class="open" @click.stop="toggleMenu" alt="">
             </div>
             <div class="acc__info">
                 <div class="acc__body" v-if="isAuth">
@@ -216,6 +220,19 @@ export default {
                     this.balance = res.data.balance
                     this.cart = res.data.basket
                 })
+        },
+        toggleMenu() {
+            this.sideActive = !this.sideActive
+
+            if (this.sideActive) {
+                document.addEventListener('click', this.closeMenu);
+            } else {
+                document.removeEventListener('click', this.closeMenu);
+            }
+        },
+        closeMenu() {
+            this.sideActive = false;
+            document.removeEventListener('click', this.closeMenu);
         },
         toggleCart() {
             this.cartOpen = !this.cartOpen;

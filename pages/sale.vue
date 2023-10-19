@@ -16,43 +16,48 @@
                 <button @click="getInventory(), sales = true" v-if="!sales">Инвентарь</button>
                 <button @click="getSteam()" :disabled="!sales" ref="update">Обновить инвентарь Steam</button>
             </div>
-        </div>z
-
-        <div class="catalog__body">
-            <div class="catalog__item" v-if="sales" v-for="item in inventory.results" :key="item.id"
-                :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }" v-show="!item.for_sale">
-                <img :src="item.img" class="main" alt="">
-                <p>{{ item.name }} </p>
-                <div class="sale">
-                    <div>
-                        <div class="saleme">
-                            <img src="@/assets/img/sale.svg" alt="">
-                            <img src="@/assets/img/salebanner.svg" class="banner" alt="" @click="openModal(item.id)">
-                        </div>
-                    </div>
-
-                    <span>{{ item.price.toFixed(1).toLocaleString() }} ₸</span>
-                </div>
-            </div>
-            <div class="catalog__item" v-if="!sales" v-for="item in inventory" :key="item.id"
-                :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }" v-show="!item.for_sale">
-                <img :src="item.img" class="main" alt="">
-                <p>{{ item.name }} </p>
-                <div class="sale">
-                    <div>
-                        <div class="saleme">
-                            <img src="@/assets/img/sale.svg" alt="">
-                            <img src="@/assets/img/salebanner.svg" class="banner" alt="" @click="openModal2(item.id)">
-                        </div>
-                        <img src="@/assets/img/salesteam.svg" @click="openSteam2(item.id)" alt="">
-                    </div>
-
-                    <span>{{ item.sell_price.toFixed(1).toLocaleString() }} ₸</span>
-                </div>
-            </div>
         </div>
-        <div class="text-center" v-if="sales">
-            <button ref="showmore" @click="loadMoreProducts">Показать еще</button>
+        <div class="empty" v-if="nado.length <= 0">
+            <img src="@/assets/img/empty.png" class="img-fluid" alt="">
+            <h1>инвентарь пока пуст</h1>
+        </div>
+        <div v-else>
+            <div class="catalog__body">
+                <div class="catalog__item" v-if="sales" v-for="item in inventory.results" :key="item.id"
+                    :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }" v-show="!item.for_sale">
+                    <img :src="item.img" class="main" alt="">
+                    <p>{{ item.name }} </p>
+                    <div class="sale">
+                        <div>
+                            <div class="saleme">
+                                <img src="@/assets/img/sale.svg" alt="">
+                                <img src="@/assets/img/salebanner.svg" class="banner" alt="" @click="openModal(item.id)">
+                            </div>
+                        </div>
+
+                        <span>{{ item.price.toFixed(1).toLocaleString() }} ₸</span>
+                    </div>
+                </div>
+                <div class="catalog__item" v-if="!sales" v-for="item in inventory" :key="item.id"
+                    :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }" v-show="!item.for_sale">
+                    <img :src="item.img" class="main" alt="">
+                    <p>{{ item.name }} </p>
+                    <div class="sale">
+                        <div>
+                            <div class="saleme">
+                                <img src="@/assets/img/sale.svg" alt="">
+                                <img src="@/assets/img/salebanner.svg" class="banner" alt="" @click="openModal2(item.id)">
+                            </div>
+                            <img src="@/assets/img/salesteam.svg" @click="openSteam2(item.id)" alt="">
+                        </div>
+
+                        <span>{{ item.sell_price.toFixed(1).toLocaleString() }} ₸</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center" v-if="sales">
+                <button ref="showmore" @click="loadMoreProducts">Показать еще</button>
+            </div>
         </div>
     </div>
     <ModalFirst :product="modal"></ModalFirst>
@@ -74,6 +79,7 @@ export default {
             modal: {},
             sales: true,
             search: '',
+            nado: [],
         }
     },
     methods: {
@@ -123,6 +129,7 @@ export default {
                 .then((res) => {
                     console.log(res);
                     this.inventory = res.data.transactions_item.map(item => item.item);
+                    this.nado = res.data.transactions_item.map(item => item.item);
                 });
         },
         getSteam() {
@@ -142,6 +149,7 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error)
+                    this.$refs.update.innerHTML = 'Ошибка'
                 })
         },
         searchProducts() {
@@ -177,6 +185,7 @@ export default {
                 .then((res) => {
                     console.log(res)
                     this.inventory = res.data
+                    this.nado = res.data.results
                 })
         },
         toggleFilter() {
@@ -238,6 +247,32 @@ useSeoMeta({
 
     @media (max-width: 1024px) {
         padding: 150px 20px 50px;
+    }
+
+    .empty {
+        margin-top: 60px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 20px;
+
+        h1 {
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 130%;
+            /* 26px */
+            text-transform: uppercase;
+            font-family: var(--mon);
+            color: #fff;
+            text-align: center;
+
+            @media (max-width: 1024px) {
+                font-size: 16px;
+            }
+        }
     }
 
     .text-center {
