@@ -24,6 +24,10 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: '/css/style.css'
+        },
+        {
+          rel: 'icon',
+          href: '/css/favicon.ico'
         }
         
        
