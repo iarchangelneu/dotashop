@@ -29,10 +29,12 @@
                 <img src="@/assets/img/burger.svg" v-if="!sideActive" class="open" @click="sideActive = !sideActive" alt="">
             </div>
             <div class="acc__info">
-                <div class="acc__body">
+                <div class="acc__body" v-if="isAuth">
                     <NuxtLink to="/withdrawal" class="cash">
                         <img src="@/assets/img/cash.svg" alt="">
-                        <span>1000 ₸</span>
+                        <span v-if="balance !== null">{{ balance == null ? '0 ₸' :
+                            balance.toFixed(1).toLocaleString()
+                            + ' ₸' }}</span>
                     </NuxtLink>
 
                     <img src="@/assets/img/cart.svg" style="cursor: pointer;" @click.stop="toggleCart" alt="">
@@ -42,6 +44,13 @@
                         <span>личный кабинет</span>
                     </NuxtLink>
                 </div>
+                <div class="acc__body" v-else>
+
+
+                    <NuxtLink to="/register" class="user">
+                        <span>Вход/Регистрация</span>
+                    </NuxtLink>
+                </div>
             </div>
         </div>
         <div class="headermob">
@@ -49,8 +58,8 @@
                 <img src="@/assets/img/headermob.svg" class="img-fluid" alt="">
             </NuxtLink>
             <div class="yas">
-                <img src="@/assets/img/cart.svg" style="cursor: pointer;" @click.stop="toggleCart" alt="">
-                <NuxtLink to="/account" class="user">
+                <img v-if="isAuth" src="@/assets/img/cart.svg" style="cursor: pointer;" @click.stop="toggleCart" alt="">
+                <NuxtLink v-if="isAuth" to="/account" class="user">
                     <img src="@/assets/img/avatar.svg" alt="">
                 </NuxtLink>
                 <div class="burg">
@@ -64,8 +73,10 @@
             <div class="mobmenu" :class="{ activeMenu: menuOpen }">
                 <div>
                     <NuxtLink to="/withdrawal" class="cashik">
-                        <img src="@/assets/img/cash.svg" alt="">
-                        <span>1000 ₸</span>
+                        <img src="@/assets/img/cash.svg" alt="" v-if="isAuth">
+                        <span v-if="balance !== null">{{ balance == null ? '0 ₸' :
+                            balance.toFixed(1).toLocaleString()
+                            + ' ₸' }}</span>
                     </NuxtLink>
 
                     <NuxtLink to="/" class="navik">
@@ -93,70 +104,28 @@
         <img src="@/assets/img/close.svg" @click="closeCart" style="cursor: pointer;" alt="">
 
         <div class="cart__body">
-            <div class="cart__item">
-                <div class="img">
-                    <img src="@/assets/img/cart1.png" alt="">
+            <div class="cart__item" v-for="item in cart" :key="cart.id">
+                <div class="img" :style="{ 'border': '2px solid #' + item.item.tags['Редкость'].color }">
+                    <img :src="item.item.img" alt="">
                 </div>
 
                 <div class="w-100">
                     <div class="delete">
-                        <h2>Fiery Soul of the Slayer</h2>
-                        <img src="@/assets/img/close.svg" style="cursor: pointer;">
+                        <h2>{{ item.item.name }}</h2>
+                        <img src="@/assets/img/close.svg" style="cursor: pointer;" @click="deleteItem(item.id)">
                     </div>
 
-                    <span>19 890 ₸</span>
-                </div>
-            </div>
-            <div class="cart__item">
-                <div class="img">
-                    <img src="@/assets/img/cart1.png" alt="">
-                </div>
-
-                <div class="w-100">
-                    <div class="delete">
-                        <h2>Fiery Soul of the Slayer</h2>
-                        <img src="@/assets/img/close.svg" style="cursor: pointer;">
-                    </div>
-
-                    <span>19 890 ₸</span>
-                </div>
-            </div>
-            <div class="cart__item">
-                <div class="img">
-                    <img src="@/assets/img/cart1.png" alt="">
-                </div>
-
-                <div class="w-100">
-                    <div class="delete">
-                        <h2>Fiery Soul of the Slayer</h2>
-                        <img src="@/assets/img/close.svg" style="cursor: pointer;">
-                    </div>
-
-                    <span>19 890 ₸</span>
-                </div>
-            </div>
-            <div class="cart__item">
-                <div class="img">
-                    <img src="@/assets/img/cart1.png" alt="">
-                </div>
-
-                <div class="w-100">
-                    <div class="delete">
-                        <h2>Fiery Soul of the Slayer</h2>
-                        <img src="@/assets/img/close.svg" style="cursor: pointer;">
-                    </div>
-
-                    <span>19 890 ₸</span>
+                    <span>{{ item.item.sell_price.toFixed(1).toLocaleString() }} ₸</span>
                 </div>
             </div>
         </div>
         <hr>
 
         <div class="cart__footer">
-            <p>иТОГО: 84 890 ₸ </p>
+            <p>иТОГО: {{ totalAmount }} ₸ </p>
 
             <div class="btns">
-                <button>
+                <button ref="purchase" @click="confirmPur()">
                     Оформить заказ
                 </button>
                 <NuxtLink to="/cart">
@@ -167,16 +136,87 @@
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
             sideActive: false,
             cartOpen: false,
             hideHeaderOnPages: ['login', 'register'],
             menuOpen: false,
+            pathUrl: 'https://dotashop.kz',
+            cart: [],
+            balance: null,
+            isAuth: false,
         }
     },
+    computed: {
+        totalAmount() {
+            return this.cart.reduce((total, item) => {
+                return total + item.item.sell_price;
+            }, 0).toFixed(1).toLocaleString();
+        },
+    },
     methods: {
+        calculateTotal() {
+            let total = 0;
+
+            this.cart.forEach(item => {
+                const price = item.products;
+                const discountedPrice = price;
+                total += discountedPrice * item.amount;
+            });
+
+            return total;
+        },
+        confirmPur() {
+            const url = `${this.pathUrl}/api/products/confirm-busket`
+            this.$refs.purchase.innerHTML = 'Покупаем'
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    this.getCart()
+                    this.$refs.purchase.innerHTML = 'Куплено'
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        deleteItem(id) {
+            const url = `${this.pathUrl}/api/products/delete-busket-item/${id}`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    this.getCart()
+                })
+        },
+        getCart() {
+            const url = `${this.pathUrl}/api/users/profile/`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    this.balance = res.data.balance
+                    this.cart = res.data.basket
+                })
+        },
         toggleCart() {
             this.cartOpen = !this.cartOpen;
             if (this.cartOpen) {
@@ -193,6 +233,18 @@ export default {
         stopPropagation(event) {
             event.stopPropagation();
         },
+    },
+    mounted() {
+        const accType = localStorage.getItem('accountType')
+
+        if (accType == 'steam' || accType == 'email') {
+            this.getCart()
+            this.isAuth = true
+        }
+        else {
+
+        }
+
     }
 }
 </script>
@@ -211,6 +263,11 @@ export default {
     backdrop-filter: blur(2px);
     transition: all .3s ease;
     padding: 99px 85px 50px 35px;
+
+    @media (max-width: 1024px) {
+        width: 100%;
+        padding: 30px 30px;
+    }
 
     hr {
         border-top: 2px solid #292238;
@@ -234,6 +291,10 @@ export default {
             display: flex;
             gap: 36px;
 
+            @media (max-width: 1024px) {
+                gap: 20px;
+            }
+
             button,
             a {
                 border-radius: 10px;
@@ -251,6 +312,10 @@ export default {
                 color: #fff;
                 padding: 10px 0;
                 transition: all .3s ease;
+
+                @media (max-width: 1024px) {
+                    font-size: 14px;
+                }
 
                 &:hover {
                     border: 1px solid var(--iris-100, #5D5FEF);
@@ -301,6 +366,10 @@ export default {
                 font-family: var(--mon);
                 color: #fff;
                 margin: 0;
+
+                @media (max-width: 1024px) {
+                    font-size: 14px;
+                }
             }
 
             span {
@@ -310,6 +379,10 @@ export default {
                 line-height: 130%;
                 font-family: var(--mon);
                 color: #fff;
+
+                @media (max-width: 1024px) {
+                    font-size: 14px;
+                }
             }
 
             .img {

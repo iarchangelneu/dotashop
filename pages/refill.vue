@@ -5,7 +5,7 @@
         <div class="form">
             <div class="form__body">
                 <h1 class="text-center">
-                    пополнение баланса
+                    ПОПОЛНЕНИЕ БАЛАНСА
                 </h1>
 
                 <div class="type">
@@ -16,20 +16,8 @@
 
                 <h2>Порядок действий для пополнения средств</h2>
 
-                <div class="paytype">
-                    <p>1. Выберите платежную систему:</p>
-                    <div>
-                        <input type="radio" id="bankCard" value="card" v-model="payType">
-                        <label for="bankCard">Банковская карта</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="mobileBalance" value="mobile" v-model="payType">
-                        <label for="mobileBalance">Баланс мобильного телефона</label>
-                    </div>
-                </div>
-
                 <div class="footer">
-                    <p>2. Подтвердите Ваше согласие с правилами нашей системы</p>
+                    <p>1. Подтвердите Ваше согласие с правилами нашей системы</p>
 
                     <div>
                         <input type="radio" id="terms">
@@ -43,7 +31,7 @@
 
                     <div class="pay">
                         <input type="number" v-model="cost">
-                        <button>Пополнить</button>
+                        <button ref="inBtn" @click="inMoney()">Пополнить</button>
                     </div>
 
                     <div class="select">
@@ -60,14 +48,45 @@
     </div>
 </template>
 <script>
-import IMask from 'imask';
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
             payType: '',
             cost: null,
-
+            pathUrl: 'https://dotashop.kz',
         }
+    },
+    methods: {
+        inMoney() {
+            const token = this.getAuthorizationCookie()
+            const csrf = this.getCSRFToken()
+            const path = `${this.pathUrl}/api/money/new-pay`
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+            axios.defaults.headers.common['X-CSRFToken'] = csrf;
+            this.$refs.inBtn.innerHTML = 'Ожидайте'
+
+            axios
+                .post(path, {
+                    amount: this.cost
+                })
+                .then(response => {
+                    console.log(response)
+                    window.location.href = response.data.url
+                    if (response.status = 201) {
+                        this.$refs.inBtn.innerHTML = 'Пополнить'
+                    }
+                    if (response.status == 228) {
+                        this.$refs.outBtn.innerHTML = response.data.error_msg
+                    }
+                })
+                .catch(error => {
+                    console.error(error)
+                    this.$refs.inBtn.innerHTML = 'Пополнить'
+                })
+        },
     },
 
 
@@ -356,4 +375,5 @@ useSeoMeta({
             }
         }
     }
-}</style>
+}
+</style>

@@ -13,7 +13,7 @@
                 <small>Зарегистрируйтесь через Steam для подключения своего инвентаря и доступа ко всем функциям!</small>
 
                 <div class="d-flex justify-content-center">
-                    <button class="steam">
+                    <button class="steam" @click="loginSteam()">
                         <img src="@/assets/img/steam.svg" alt="">
                         <span>Войти через Steam</span>
                     </button>
@@ -23,13 +23,13 @@
             <div class="inputs">
                 <div>
                     <label for="email">Ваш e-mail</label>
-                    <input type="email" name="email" id="email" placeholder="E-mail">
+                    <input type="email" name="email" id="email" placeholder="E-mail" v-model="email">
                 </div>
                 <div>
                     <label for="password">пароль</label>
                     <div class="showpass">
                         <input :type="showPassword ? 'text' : 'password'" name="password" id="password"
-                            placeholder="Введите пароль">
+                            placeholder="Введите пароль" v-model="password">
                         <img @click="togglePasswordVisibility('password-repeat')" src="@/assets/img/showpass.svg" alt=""
                             srcset="" />
                     </div>
@@ -39,13 +39,13 @@
                     <label for="password-repeat">повторите пароль</label>
                     <div class="showpass">
                         <input :type="showPassword ? 'text' : 'password'" name="password-repeat" id="password-repeat"
-                            placeholder="Повторите пароль">
+                            placeholder="Повторите пароль" v-model="repeat__password">
                         <img @click="togglePasswordVisibility('password-repeat')" src="@/assets/img/showpass.svg" alt=""
                             srcset="" />
                     </div>
                 </div>
 
-                <button>Регистрация</button>
+                <button @click="register()">Регистрация</button>
 
                 <div class="text-center">
                     <span>Есть аккаунт? <NuxtLink to='/login'>Войти</NuxtLink></span>
@@ -55,13 +55,62 @@
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
+            pathUrl: 'https://dotashop.kz',
             showPassword: false,
+            email: '',
+            password: '',
+            repeat__password: '',
         }
     },
     methods: {
+        loginSteam() {
+            const url = `${this.pathUrl}/api/users/login-steam/`
+
+            const csrf = this.getCSRFToken()
+
+            axios.defaults.headers.common['X-CSRFToken'] = csrf;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    window.location.href = res.data.url
+                })
+                .catch((error) => {
+                    this.error = error.response.data.detail
+                    console.log(error.response);
+                });
+        },
+        register() {
+            const url = `${this.pathUrl}/api/users/registration`
+            const csrf = this.getCSRFToken()
+
+            axios.defaults.headers.common['X-CSRFToken'] = csrf;
+            axios
+                .post(url, { first_name: this.email, password: this.password, username: this.email, email: this.email })
+                .then((res) => {
+
+
+                    console.log(res)
+                    localStorage.setItem('accountType', 'email')
+                    if (res.status == 202) {
+                        document.cookie = `Authorization=${res.data.token}; expires=Fri, 31 Dec 2023 23:59:59 GMT; path=/`;
+                        window.location.href = '/account'
+
+                    }
+                })
+                .catch((error) => {
+                    this.error = error.response.data.detail
+                    console.log(error.response);
+                });
+
+        },
         togglePasswordVisibility(inputId) {
             const inputElement = document.getElementById(inputId);
             if (inputElement) {
@@ -70,6 +119,17 @@ export default {
             }
         },
     },
+    mounted() {
+        const accType = localStorage.getItem('accountType')
+
+        if (accType == 'steam' || accType == 'email') {
+            this.$router.push('/account')
+
+        }
+        else {
+
+        }
+    }
 }
 </script>
 <script setup>

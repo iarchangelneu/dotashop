@@ -4,7 +4,7 @@ export default {
     return {
       isAuth: false,
       accountUrl: "",
-      pathUrl: 'https://easyhelp.kz',
+      pathUrl: 'https://dotashop.kz',
       cart: [],
     };
   },
@@ -71,30 +71,5 @@ export default {
       }
       return null;
     },
-  },
-  mounted() {
-    setInterval(() => {
-      if (this.checkAuthorizationCookie()) {
-        this.isAuth = true;
-      } else {
-        this.isAuth = false;
-      }
-      const acctype = localStorage.getItem("accountType");
-      if (acctype == "buyer-account") {
-        this.accountUrl = "/buyer-account";
-      } else if (acctype == "seller-account") {
-        this.accountUrl = "/seller-account";
-      } else {
-        this.accountUrl = "/register";
-      }
-    }, 100);
-
-    const acctype = localStorage.getItem("accountType");
-      if (acctype == "buyer-account") {
-        this.getCart()
-      }
-      else{
-        return
-      }
   },
 };

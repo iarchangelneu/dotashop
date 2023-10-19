@@ -7,10 +7,10 @@
                     <h1>продать на dotashop</h1>
 
                     <div class="item__body">
-                        <img src="@/assets/img/modal1.png" alt="">
+                        <img :src="product.img" alt="">
 
                         <div>
-                            <h2>Fiery Soul of the Slayer</h2>
+                            <h2>{{ product.name }}</h2>
 
                             <span>
                                 Ваша цена:
@@ -18,7 +18,7 @@
 
                             <div class="price">
                                 <input type="number" v-model="cost">
-                                <button @click="openSucces">ПРОДАТЬ</button>
+                                <button @click="saleItem(product.name, product.id)">ПРОДАТЬ</button>
                             </div>
                             <small>{{ error }}</small>
                         </div>
@@ -28,26 +28,49 @@
             </div>
         </div>
     </div>
-    <ModalSecond></ModalSecond>
+    <ModalSecond :name="name"></ModalSecond>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
+    props: {
+        product: Object,
+    },
     data() {
         return {
             cost: null,
             error: '',
+            pathUrl: 'https://dotashop.kz',
+            name: '',
         }
     },
     methods: {
-        openSucces() {
+        saleItem(name, id) {
+            const url = `${this.pathUrl}/api/products/sale-item/${id}/${this.cost}`
+            const token = this.getAuthorizationCookie();
+            this.name = name
             if (this.cost <= 0) {
                 this.error = 'Сумма должна быть > 0'
             }
             else {
-                $('#modalFirst').modal('hide')
-                $('#modalSecond').modal('show')
+                axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+                axios
+                    .get(url)
+                    .then((res) => {
+                        console.log(res)
+                        if (res.status == 200) {
+                            $('#modalFirst').modal('hide')
+                            $('#modalSecond').modal('show')
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             }
-        }
+        },
     }
 }
 </script>
@@ -67,8 +90,11 @@ export default {
         }
 
         img {
+            max-width: 230px;
+
             @media (max-width: 1024px) {
                 width: 100%;
+                max-width: 97px;
             }
         }
 
@@ -151,7 +177,7 @@ export default {
         color: #fff;
         margin: 0 0 20px;
 
-        @media (max-width: 1024px){
+        @media (max-width: 1024px) {
             font-size: 16px;
         }
     }

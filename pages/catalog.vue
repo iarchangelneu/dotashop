@@ -7,83 +7,54 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1"><img src="@/assets/img/search.svg" alt=""></span>
                 </div>
-                <input type="text" class="form-control" placeholder="Поиск по товарам" aria-describedby="basic-addon1">
+                <input type="text" v-model="search" @input="searchProducts" class="form-control"
+                    placeholder="Поиск по товарам" aria-describedby="basic-addon1">
             </div>
             <div class="buttons">
                 <button @click.stop="toggleFilter">фильтр</button>
                 <button @click.stop="toggleSort">сортировка</button>
             </div>
             <div class="sort__body" :class="{ activeFil: sort }">
-                <h2>Сначала дешевле</h2>
-                <h2>Сначала дороже</h2>
-                <h2>Полулярное</h2>
-                <h2>Новое</h2>
+                <h2 @click="sortBy('price')">Сначала дешевле</h2>
+                <h2 @click="sortBy('-price')">Сначала дороже</h2>
+                <h2 @click="sortBy('rating')">Полулярное</h2>
+                <h2 @click="sortBy('-rating')">Новое</h2>
             </div>
-            <div class="filter__body" @click="stopPropagation" :class="{ activeFil: filters }">
-                <div>
+            <div class="filter__body" @click="stopPropagation" :class="{ activeFil: filter }">
+                <div class="w-100">
                     <h2>Редкость:</h2>
                     <div class="rare">
-                        <div>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Rare
-                                </p>
+                        <div class="rare__gap">
+                            <label class="custom-checkbox" v-for="item in filters['Редкость']" :key="item">
+                                <input type="checkbox" v-model="selectedRarity" :value="item" @change="applyFilters">
+                                <p class="checkbox-text m-0">{{ item }}</p>
                             </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Common
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Uncommon
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Mythical
-                                </p>
-                            </label>
-                        </div>
-                        <div>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Legendary
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Arcana
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Immortal
-                                </p>
-                            </label>
-
                         </div>
                     </div>
                 </div>
                 <div class="types">
                     <div class="select">
                         <h2>Герой</h2>
-                        <select name="" id="">
+                        <select v-model="selectedHero" @change="applyFilters">
                             <option value="" disabled selected>Любой</option>
+                            <option v-for="item in filters['Герой']" :key="item">{{ item }}</option>
                         </select>
                     </div>
                     <div class="select">
                         <h2>Ячейка</h2>
-                        <select name="" id="">
+                        <select v-model="selectedCell" @change="applyFilters">
                             <option value="" disabled selected>Любая</option>
+                            <option v-for="item in filters['Ячейка']" :key="item">{{ item }}</option>
                         </select>
                     </div>
                     <div>
                         <h2>Цена</h2>
                         <div class="price">
-                            <input type="number" id="from" name="from" placeholder="от">
+                            <input type="number" id="from" name="from" v-model="minPrice" @input="applyFilters"
+                                placeholder="от">
                             <img src="@/assets/img/line.svg" alt="">
-                            <input type="number" id="to" name="to" placeholder="до">
+                            <input type="number" id="to" name="to" v-model="maxPrice" @input="applyFilters"
+                                placeholder="до">
                         </div>
                     </div>
                 </div>
@@ -91,74 +62,144 @@
         </div>
 
         <div class="catalog__body">
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
-                </div>
-            </NuxtLink>
-            <NuxtLink :to="'/product/1'" class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" alt="">
-                <p>Fiery Soul of the Slayer</p>
-                <div class="text-right">
-                    <span>19 800 ₸</span>
+            <NuxtLink v-for="item in catalog.results" :key="item.id" :to="'/product/' + item.id" class="catalog__item"
+                :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }">
+                <img :src="item.img" alt="">
+                <p>{{ item.name }}</p>
+                <div class="price">
+                    <small>
+                        {{ item.price.toFixed(1).toLocaleString() }} ₸
+                        <img src="@/assets/img/discount.svg" alt="">
+                    </small>
+                    <p>{{ item.sell_price.toFixed(1).toLocaleString() }} ₸</p>
                 </div>
             </NuxtLink>
         </div>
 
         <div class="text-center">
-            <button ref="showmore">Показать еще</button>
+            <button ref="showmore" @click="loadMoreProducts">Показать еще</button>
         </div>
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
             sort: false,
-            filters: false,
+            filter: false,
+            catalog: [],
+            pathUrl: 'https://dotashop.kz',
+            kzt: null,
+            usd: null,
+            search: '',
+            filters: [],
+            selectedRarity: [],
+            selectedHero: '',
+            selectedCell: '',
+            minPrice: null,
+            maxPrice: null,
         }
     },
     methods: {
+        loadMoreProducts() {
+            if (this.catalog.links.next) {
+                this.$refs.showmore.innerHTML = 'Загружаем'
+                axios
+                    .get(this.catalog.links.next)
+                    .then(response => {
+                        this.$refs.showmore.innerHTML = 'Показать еще'
+                        this.catalog.results.push(...response.data.results);
+                        this.catalog.links.next = response.data.links.next;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+            else {
+                this.$refs.showmore.innerHTML = 'Больше ничего нет (;'
+            }
+        },
+        getCatalog() {
+            const url = `${this.pathUrl}/api/products/catalog`
+
+            axios
+                .get(url)
+                .then(response => {
+                    this.catalog = response.data;
+                    this.filters = response.data.info_add.filter_type
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        searchProducts() {
+            const query = this.search.trim();
+            if (query) {
+                const queryParams = `?search=${query}`;
+                this.fetchSearchResults(queryParams);
+            } else {
+                this.getCatalog();
+            }
+        },
+        fetchSearchResults(queryParams) {
+            const path = `${this.pathUrl}/api/products/catalog${queryParams}`;
+            axios
+                .get(path)
+                .then(response => {
+                    this.catalog = response.data;
+                    this.filters = response.data.info_add.filter_type
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        applyFilters() {
+            let queryParams = '';
+            if (this.selectedRarity) {
+                queryParams += `&tags__редкость=${this.selectedRarity}`;
+            }
+            if (this.selectedHero) {
+                queryParams += `&tags__герой=${this.selectedHero}`;
+            }
+            if (this.selectedCell) {
+                queryParams += `&tags__ячейка=${this.selectedCell}`;
+            }
+            if (this.minPrice !== null) {
+                queryParams += `&min_price=${this.minPrice}`;
+            }
+            if (this.maxPrice !== null) {
+                queryParams += `&max_price=${this.maxPrice}`;
+            }
+
+            // Remove the leading '&' if there are any query parameters
+            if (queryParams) {
+                queryParams = `?${queryParams.substring(1)}`;
+            }
+
+            const path = `${this.pathUrl}/api/products/catalog${queryParams}`;
+            axios
+                .get(path)
+                .then((response) => {
+                    this.catalog = response.data;
+                    this.filters = response.data.info_add.filter_type
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
         toggleFilter() {
-            this.filters = !this.filters;
-            if (this.filters) {
+            this.filter = !this.filter;
+            if (this.filter) {
                 document.addEventListener('click', this.closeFilter);
             } else {
                 document.removeEventListener('click', this.closeFilter);
             }
         },
         closeFilter() {
-            this.filters = false;
+            this.filter = false;
             document.removeEventListener('click', this.closeFilter);
         },
         toggleSort() {
@@ -176,6 +217,22 @@ export default {
         stopPropagation(event) {
             event.stopPropagation();
         },
+        sortBy(ordering) {
+            this.sort = false
+            const path = `${this.pathUrl}/api/products/catalog?ordering=${ordering}`;
+            axios
+                .get(path)
+                .then(response => {
+                    this.catalog = response.data;
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+    },
+    mounted() {
+        this.getCatalog()
     }
 }
 </script>
@@ -251,6 +308,47 @@ useSeoMeta({
                 @media (max-width: 1024px) {
                     height: 97px;
                 }
+            }
+
+            .price {
+                margin-top: auto;
+                display: flex;
+                justify-content: flex-end;
+                gap: 6px;
+
+                small {
+                    position: relative;
+                    display: block;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: 130%;
+                    font-family: var(--mon);
+                    color: #fff;
+
+                    img {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        top: 0;
+                        width: 100% !important;
+                        height: 12px !important;
+                    }
+                }
+
+                p {
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: 130%;
+                    font-family: var(--mon);
+                    color: #fff;
+                    margin: 0;
+                }
+            }
+
+            .text-right {
+                margin-top: auto;
             }
 
             p,
@@ -364,6 +462,7 @@ useSeoMeta({
             background: #292238;
             display: flex;
             gap: 71px;
+            width: 670px;
 
             @media (max-width: 1024px) {
                 flex-direction: column;
@@ -418,7 +517,7 @@ useSeoMeta({
                     font-weight: 500;
                     line-height: normal;
                     font-family: var(--mon);
-                    width: 14.583vw;
+                    width: 100%;
 
                     @media (max-width: 1024px) {
                         width: 100%;
@@ -443,11 +542,18 @@ useSeoMeta({
             }
 
             .rare {
-                display: flex;
-                gap: 30px;
+                width: 100%;
 
                 label {
                     display: block;
+                    margin: 0;
+                }
+
+                .rare__gap {
+                    display: grid;
+                    gap: 20px;
+                    grid-auto-flow: dense;
+                    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
                 }
 
                 div {

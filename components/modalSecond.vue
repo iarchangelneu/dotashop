@@ -7,7 +7,7 @@
                     <div class="text-center">
                         <img src="@/assets/img/modal2.png" alt="">
 
-                        <h1><strong>Fiery Soul of the Slayer</strong> успешно выставлен на продажу!</h1>
+                        <h1><strong>{{ name }}</strong> успешно выставлен на продажу!</h1>
                         <p>Если предмет будет продан - Ваш баланс на сайте обновится </p>
                     </div>
                 </div>
@@ -18,6 +18,9 @@
 </template>
 <script>
 export default {
+    props: {
+        name: String,
+    },
     data() {
         return {}
     }

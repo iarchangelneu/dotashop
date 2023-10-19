@@ -16,41 +16,38 @@
                     <div class="balance">
                         <div>
                             <h2>БАЛАНС</h2>
-                            <h2>1000 ₸</h2>
+                            <h2 v-if="userData.length <= 0"></h2>
+                            <h2 v-else>{{ userData.balance.toFixed(1).toLocaleString() + ' ₸' }}</h2>
                         </div>
 
                         <div class="btns">
-                            <NuxtLink to="/refll">Пополнить</NuxtLink>
+                            <NuxtLink to="/refill">Пополнить</NuxtLink>
                             <NuxtLink to="/withdrawal">Вывести</NuxtLink>
                         </div>
 
                     </div>
                     <div class="user">
-                        <h3>Александр Иванов</h3>
-                        <a href="https://пошелнахуй.рф">
+                        <h3>{{ userData.steam_personaname || userData.first_name }}</h3>
+                        <a :href="userData.steam_profileurl" v-if="userData.steam_profileurl" target="_blank">
                             <img src="@/assets/img/steamgray.svg" alt="">
-                            <span>alex_krrr777</span>
+                            <span>{{ userData.steam_personaname }}</span>
                         </a>
                     </div>
                 </div>
 
                 <div class="password">
                     <h2>Пароль</h2>
-
-                    <div>
-                        <label for="current-password">Текущий пароль</label>
-                        <input type="password" name="current-password" id="current-password">
-                    </div>
                     <div>
                         <label for="new-passwrod">Новый пароль</label>
-                        <input type="password" name="new-passwrod" id="new-passwrod">
+                        <input type="password" name="new-passwrod" id="new-passwrod" v-model="password">
                     </div>
                     <div>
                         <label for="repeat-password">Повторите пароль</label>
-                        <input type="password" name="repeat-password" id="repeat-password">
+                        <input type="password" name="repeat-password" id="repeat-password" v-model="repeat_password">
                     </div>
 
-                    <button>Сохранить пароль</button>
+                    <button @click="editUser()">Сохранить пароль</button>
+                    <button @click="logOut()" class="d-block mt-4">Выйти</button>
                 </div>
             </div>
 
@@ -61,11 +58,11 @@
                             <img src="@/assets/img/link.svg" alt="">
                             <label for="link">Трейд-ссылка</label>
                         </div>
-                        <NuxtLink to="https://явнонетут.ру">Где получить?</NuxtLink>
+                        <NuxtLink to="https://xd">Где получить?</NuxtLink>
                     </div>
-                    <input type="url" name="link" id="link" placeholder="Вставьте вашу trade-ссылку">
+                    <input type="url" name="link" id="link" placeholder="Вставьте вашу trade-ссылку" v-model="trade_link">
 
-                    <button>Сохранить</button>
+                    <button @click="editUser()">Сохранить</button>
                 </div>
 
                 <div class="email">
@@ -73,16 +70,16 @@
                         <label for="email">
                             E-mail
                         </label>
-                        <input type="email" name="email" id="email">
+                        <input type="email" name="email" id="email" v-model="email">
 
-                        <button>Изменить</button>
+                        <button @click="editUser()">Изменить</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="transactions" v-if="activeNav == 1">
-            <div class="filters">
+            <!-- <div class="filters">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1"><img src="@/assets/img/search.svg" alt=""></span>
@@ -100,12 +97,9 @@
                         </select>
                     </div>
 
-                    <div class="buttons">
-                        <button>Применить</button>
-                        <button>Сбросить</button>
-                    </div>
+
                 </div>
-            </div>
+            </div> -->
             <div class="scrollik">
                 <!-- <div class="empty">
                     <h1>Список операций будет доступен, когда Вы пополните или выведете средства с баланса</h1>
@@ -117,155 +111,41 @@
                 </div> -->
                 <div class="mobtrans">
                     <div class="mobbody">
-                        <div class="mob__item">
+                        <div class="mob__item" v-for="item in transactions" :key="item.id">
                             <div class="imageblock">
                                 <div class="counts">
                                     <small>Тип</small>
-                                    <span>Покупка</span>
+                                    <span>{{ item.type }}</span>
                                 </div>
                                 <small>Предмет</small>
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
+                                <div class="item text-left"
+                                    :style="{ 'border': '2px solid #' + item.item.tags['Редкость'].color }">
+                                    <img :src="item.item.img" alt="">
+                                    <span>{{ item.item.name }}</span>
                                     <div class="text-right">
-                                        <span>32 690 ₸</span>
+                                        <span>{{ item.item.sell_price.toFixed(1) }} ₸</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="countsblock">
-                                <div class="counts">
-                                    <small>Количество</small>
-                                    <span>1</span>
-                                </div>
+
                                 <div class="counts">
                                     <small>Цена</small>
-                                    <span>7990 ₸</span>
+                                    <span>{{ item.item.sell_price.toFixed(1) }} ₸</span>
                                 </div>
+
                                 <div class="counts">
-                                    <small>Сумма</small>
-                                    <span>- 15.980 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Дата</small>
-                                    <span>29.11.22</span>
+                                    <small>Дата </small>
+                                    <span> {{ formatDate(item.date) }}</span>
                                 </div>
                                 <div class="counts">
                                     <small>Статус</small>
-                                    <span><img src="@/assets/img/success.svg" alt=""></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mob__item">
-                            <div class="imageblock">
-                                <div class="counts">
-                                    <small>Тип</small>
-                                    <span>Покупка</span>
-                                </div>
-                                <small>Предмет</small>
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="countsblock">
-                                <div class="counts">
-                                    <small>Количество</small>
-                                    <span>1</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Цена</small>
-                                    <span>7990 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Сумма</small>
-                                    <span>- 15.980 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Дата</small>
-                                    <span>29.11.22</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Статус</small>
-                                    <span><img src="@/assets/img/failure.svg" alt=""></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mob__item">
-                            <div class="imageblock">
-                                <div class="counts">
-                                    <small>Тип</small>
-                                    <span>Покупка</span>
-                                </div>
-                                <small>Предмет</small>
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="countsblock">
-                                <div class="counts">
-                                    <small>Количество</small>
-                                    <span>1</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Цена</small>
-                                    <span>7990 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Сумма</small>
-                                    <span>- 15.980 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Дата</small>
-                                    <span>29.11.22</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Статус</small>
-                                    <span><img src="@/assets/img/process.svg" alt=""></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mob__item">
-                            <div class="imageblock">
-                                <div class="counts">
-                                    <small>Тип</small>
-                                    <span>Покупка</span>
-                                </div>
-                                <small>Предмет</small>
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="countsblock">
-                                <div class="counts">
-                                    <small>Количество</small>
-                                    <span>1</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Цена</small>
-                                    <span>7990 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Сумма</small>
-                                    <span>- 15.980 ₸</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Дата</small>
-                                    <span>29.11.22</span>
-                                </div>
-                                <div class="counts">
-                                    <small>Статус</small>
-                                    <span><img src="@/assets/img/tradelock.svg" alt=""></span>
+                                    <span v-if="item.status == 'Совершено'"><img src="@/assets/img/success.svg"
+                                            alt=""></span>
+                                    <span v-if="item.status == 'В процессе'"><img src="@/assets/img/process.svg"
+                                            alt=""></span>
+                                    <span v-if="item.status == 'Отменено'"><img src="@/assets/img/failure.svg"
+                                            alt=""></span>
                                 </div>
                             </div>
                         </div>
@@ -276,98 +156,29 @@
                         <tr>
                             <th scope="col">Тип</th>
                             <th scope="col">Предмет</th>
-                            <th scope="col">Количество</th>
                             <th scope="col">Цена</th>
-                            <th scope="col">Сумма</th>
                             <th scope="col">Дата</th>
                             <th scope="col">Статус</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Покупка</td>
+                        <tr v-for="item in transactions" :key="item.id">
+                            <td>{{ item.type }}</td>
                             <td class="d-flex justify-content-center">
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
+                                <div class="item text-left"
+                                    :style="{ 'border': '2px solid #' + item.item.tags['Редкость'].color }">
+                                    <img :src="item.item.img" alt="">
+                                    <span>{{ item.item.name }}</span>
                                     <div class="text-right">
-                                        <span>32 690 ₸</span>
+                                        <span>{{ item.item.sell_price.toFixed(1) }} ₸</span>
                                     </div>
                                 </div>
                             </td>
-                            <td>2</td>
-                            <td>7990 ₸</td>
-                            <td>- 15.980 ₸</td>
-                            <td>05.12.22</td>
-                            <td class="success">Совершено</td>
-                        </tr>
-                        <tr>
-                            <td>Покупка</td>
-                            <td class="d-flex justify-content-center">
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>2</td>
-                            <td>7990 ₸</td>
-                            <td>- 15.980 ₸</td>
-                            <td>05.12.22</td>
-                            <td class="failure">Отменено</td>
-                        </tr>
-                        <tr>
-                            <td>Покупка</td>
-                            <td class="d-flex justify-content-center">
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>2</td>
-                            <td>7990 ₸</td>
-                            <td>- 15.980 ₸</td>
-                            <td>05.12.22</td>
-                            <td class="process">В процессе</td>
-                        </tr>
-                        <tr>
-                            <td>Покупка</td>
-                            <td class="d-flex justify-content-center">
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>2</td>
-                            <td>7990 ₸</td>
-                            <td>- 15.980 ₸</td>
-                            <td>05.12.22</td>
-                            <td class="tradelock">Trade Lock: 7д.</td>
-                        </tr>
-                        <tr>
-                            <td>Покупка</td>
-                            <td class="d-flex justify-content-center">
-                                <div class="item text-left">
-                                    <img src="@/assets/img/trans1.png" alt="">
-                                    <span>Charms of the Firefiend</span>
-                                    <div class="text-right">
-                                        <span>32 690 ₸</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>2</td>
-                            <td>7990 ₸</td>
-                            <td>- 15.980 ₸</td>
-                            <td>05.12.22</td>
-                            <td class="tradelock">Trade Lock: 7д.</td>
+                            <td>{{ item.item.sell_price.toFixed(1) }} ₸</td>
+                            <td>{{ formatDate(item.date) }}</td>
+                            <td
+                                :class="{ process: item.status == 'В процессе', success: item.status == 'Совершено', failure: item.status == 'Отменено' }">
+                                {{ item.status }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -382,7 +193,7 @@
                 </div> -->
                 <div class="mobtrans">
 
-                    <div class="mob__body" v-for="item in transactions.slice().reverse()" :key="item.id">
+                    <div class="mob__body" v-for="item in balance.slice().reverse()" :key="item.id">
                         <div class="paddingblya">
                             <div class="body__header">
                                 <small>{{ item.type_operation }}</small>
@@ -393,11 +204,11 @@
                             <div class="body__footer">
                                 <div>
                                     <small>Цена</small>
-                                    <span>+ {{ item.amount.toLocaleString() }} ₸</span>
+                                    <span> {{ item.amount.toLocaleString() }} ₸</span>
                                 </div>
                                 <div>
                                     <small>Состояние счета</small>
-                                    <span>{{ calculateAmountNow(item) }} ₸</span>
+                                    <span>{{ item.amount_now.toFixed(1) }} ₸</span>
                                 </div>
                             </div>
                         </div>
@@ -415,12 +226,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Пополнение</td>
-                            <td>+ 8 000 ₸</td>
-                            <td>05.12.22 15:47</td>
-                            <td class="success">Совершено</td>
-                            <td>18 000 ₸</td>
+                        <tr v-for="item in balance.slice().reverse()" :key="item.id">
+                            <td>{{ item.type_operation }}</td>
+                            <td>{{ item.amount }} ₸</td>
+                            <td>{{ formatDate(item.date) }}</td>
+                            <td :class="{ success: item.paid == 1, failure: item.paid == 0 }">{{ item.paid == 1 ?
+                                'Совершено'
+                                : 'Отменено' }}</td>
+                            <td>{{ item.amount_now.toFixed(1) }} ₸</td>
                         </tr>
 
                     </tbody>
@@ -430,12 +243,102 @@
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
-            activeNav: 1,
+            pathUrl: 'https://dotashop.kz',
+            activeNav: 0,
+            userData: [],
+            trade_link: '',
+            email: '',
+            password: '',
+            repeat_password: '',
+            transactions: [],
+            balance: [],
         }
-    }
+    },
+    methods: {
+        formatDate(dateTime) {
+            const date = new Date(dateTime);
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = String(date.getFullYear()).slice(-2);
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${day}.${month}.${year} ${hours}:${minutes}`;
+        },
+        editUser() {
+            const url = `${this.pathUrl}/api/users/edit-profile/${this.userData.id}`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+            if (this.password == '') {
+                axios
+                    .put(url, {
+                        email: this.email,
+                        trade_link: this.trade_link,
+
+                    })
+
+                    .then((res) => {
+                        console.log(res)
+
+                        this.getUser()
+                    })
+            }
+            else {
+                axios
+                    .put(url, {
+                        email: this.email,
+                        password: this.password,
+                        trade_link: this.trade_link,
+
+                    })
+
+                    .then((res) => {
+                        console.log(res)
+
+                        this.getUser()
+                    })
+            }
+        },
+        getUser() {
+            const url = `${this.pathUrl}/api/users/profile/`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    this.userData = res.data
+                    this.trade_link = res.data.trade_link
+                    this.email = res.data.email
+                    this.transactions = res.data.transactions_item
+                    this.balance = res.data.transactions_balance
+                })
+        },
+    },
+    mounted() {
+        const accType = localStorage.getItem('accountType')
+
+        if (accType == 'steam' || accType == 'email') {
+            this.getUser()
+
+        }
+        else {
+            this.$router.push('/register')
+        }
+
+    },
 }
 </script>
 <script setup>
@@ -463,6 +366,11 @@ useSeoMeta({
         padding: 30px;
         border-radius: 10px;
         background: #292238;
+
+        hr {
+            margin: 20px 0;
+            border-top: 1px solid #fff;
+        }
 
         .empty {
             display: flex;
@@ -510,9 +418,9 @@ useSeoMeta({
         .mobtrans {
             display: none;
 
-            border-radius: 30px;
-            background: #FFF;
-            box-shadow: 0px 0px 15px 0px rgba(47, 59, 163, 0.20);
+            // border-radius: 30px;
+            // background: #FFF;
+            // box-shadow: 0px 0px 15px 0px rgba(47, 59, 163, 0.20);
 
             .mob__body {
 
@@ -524,7 +432,7 @@ useSeoMeta({
 
                 .paddingblya {
 
-                    padding: 30px;
+                    // padding: 30px;
 
 
                     .body__header {
@@ -731,7 +639,7 @@ useSeoMeta({
         }
 
         .scrollik {
-            margin-top: 45px;
+            margin-top: 20px;
             height: 700px;
             overflow-y: auto;
 
@@ -839,6 +747,7 @@ useSeoMeta({
                         display: flex;
                         align-items: center;
                         justify-content: space-between;
+                        gap: 10px;
                         width: 100%;
                     }
                 }
@@ -1333,6 +1242,11 @@ useSeoMeta({
         display: flex;
         gap: 50px;
 
+        @media (max-width: 1024px) {
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
         .activeNav {
             color: #fff !important;
         }
@@ -1349,6 +1263,10 @@ useSeoMeta({
             color: #C8C8C8;
             cursor: pointer;
             transition: all .3s ease;
+
+            @media (max-width: 1024px) {
+                font-size: 16px;
+            }
         }
     }
 
@@ -1363,6 +1281,10 @@ useSeoMeta({
         font-family: var(--col);
         color: #fff;
         margin: 27px 0 30px;
+
+        @media (max-width: 1024px) {
+            font-size: 20px;
+        }
     }
 }
 </style>

@@ -18,15 +18,7 @@
                 <h2>Порядок действий для вывода средств</h2>
 
                 <div class="paytype">
-                    <p>1. Выберите метод вывода:</p>
-                    <div>
-                        <input type="radio" id="bankCard" value="card" v-model="payType">
-                        <label for="bankCard">Банковская карта</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="mobileBalance" value="mobile" v-model="payType">
-                        <label for="mobileBalance">Баланс мобильного телефона</label>
-                    </div>
+                    <p>1. Введите реквизиты карты:</p>
                 </div>
 
                 <div class="footer">
@@ -37,12 +29,8 @@
                         <label for="terms">Я согласен с <NuxtLink to="/terms"> пользовательским соглашением</NuxtLink>
                             и <NuxtLink to="/terms">политикой конфиденциальности</NuxtLink></label>
                     </div>
-                    <div class="d-none cardd" :class="{ 'd-block': payType == 'mobile' }">
-                        <p class="mt-4">Укажите ваш номер телефона</p>
 
-                        <input type="text" id="selector" v-model="phone">
-                    </div>
-                    <div class="d-block" v-if="payType == 'card'">
+                    <div class="d-block">
                         <p class="mt-4">Укажите реквизиты вашей карты</p>
                         <div class="cardd">
                             <input type="text" class="mb-3 w-100" name="card" id="card" v-model="cardNumber"
@@ -57,7 +45,7 @@
 
                     <div class="pay">
                         <input type="number" v-model="cost">
-                        <button>Вывести</button>
+                        <button ref="outBtn" @click="outMoney">Вывести</button>
                     </div>
 
                     <div class="select">
@@ -74,10 +62,13 @@
     </div>
 </template>
 <script>
-import IMask from 'imask';
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
+            pathUrl: 'https://dotashop.kz',
             payType: '',
             cost: null,
             cardNumber: '',
@@ -97,7 +88,7 @@ export default {
 
             axios
                 .post(path, {
-                    amount: this.count,
+                    amount: this.cost,
                     card_number: this.cardNumber.replace(/\s/g, ''),
                     cardholder: this.cardHolder
                 })
@@ -133,13 +124,7 @@ export default {
             this.cardHolder = this.cardNumberToHolderMapping[newCardNumber] || "";
         }
     },
-    mounted() {
-        const element = document.getElementById('selector');
-        const maskOptions = {
-            mask: '+{7}(000)000-00-00'
-        };
-        const mask = IMask(element, maskOptions);
-    }
+
 }
 </script>
 <script setup>

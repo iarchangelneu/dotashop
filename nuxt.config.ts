@@ -2,13 +2,13 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   pages: true,
-  // modules: [
-  //   'nuxt-gtag',
-  // ],
+  modules: [
+    'nuxt-gtag',
+  ],
 
-  // gtag: {
-  //   id: 'G-NT75P2E332'
-  // },
+  gtag: {
+    id: 'G-4H7KYY5F9J'
+  },
 
   app: {
     head: {
@@ -36,7 +36,7 @@ export default defineNuxtConfig({
           src: 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js'
         },
         {
-          src: '//code.jivo.ru/widget/l4uk4LxMqC',
+          src: '//code.jivo.ru/widget/p3Kcju8pAj',
           async: true,
         },   
       ]

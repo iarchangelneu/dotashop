@@ -7,21 +7,54 @@
                     <h1>вывести предмет в steam</h1>
 
                     <div class="text-center">
-                        <p>Вы хотите вывести <strong>Fiery Soul of the Slayer</strong> в Steam?</p>
+                        <p>Вы хотите вывести <strong>{{ product.name }}</strong> в Steam?</p>
                         <p>Инструкция по получению предмета будет отправлена на Вашу почту</p>
 
-                        <button>ПОДТВЕРДИТЬ</button>
+                        <button @click="steamOut(product.id)">ПОДТВЕРДИТЬ</button>
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
+    <EmailModal></EmailModal>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
+    props: {
+        product: Object,
+    },
     data() {
-        return {}
+        return {
+            pathUrl: 'https://dotashop.kz',
+        }
+    },
+    methods: {
+        steamOut(id) {
+            const url = `${this.pathUrl}/api/users/send-email`
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .post(url, {
+                    id: id,
+                })
+                .then((res) => {
+                    console.log(res)
+                    if (res.status == 200) {
+                        $('#steamModal').modal('hide')
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    $('#steamModal').modal('hide')
+                    $('#emailModal').modal('show')
+                })
+        },
     }
 }
 </script>

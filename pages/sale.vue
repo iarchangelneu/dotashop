@@ -7,122 +7,177 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1"><img src="@/assets/img/search.svg" alt=""></span>
                 </div>
-                <input type="text" class="form-control" placeholder="Поиск по товарам" aria-describedby="basic-addon1">
+                <input type="text" :disabled="!sales" class="form-control" placeholder="Поиск по товарам"
+                    aria-describedby="basic-addon1" v-model="search" @input="searchProducts">
             </div>
 
             <div class="buttons">
-                <button @click.stop="toggleFilter">фильтр</button>
-                <button @click.stop="toggleSort">сортировка</button>
+                <button @click="getTrans(), sales = false" v-if="sales">Покупки</button>
+                <button @click="getInventory(), sales = true" v-if="!sales">Инвентарь</button>
+                <button @click="getSteam()" :disabled="!sales">Обновить инвентарь Steam</button>
             </div>
-            <div class="sort__body" :class="{ activeFil: sort }">
-                <h2>Сначала дешевле</h2>
-                <h2>Сначала дороже</h2>
-                <h2>Полулярное</h2>
-                <h2>Новое</h2>
-            </div>
-            <div class="filter__body" @click="stopPropagation" :class="{ activeFil: filters }">
-                <div>
-                    <h2>Редкость:</h2>
-                    <div class="rare">
-                        <div>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Rare
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Common
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Uncommon
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Mythical
-                                </p>
-                            </label>
-                        </div>
-                        <div>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Legendary
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Arcana
-                                </p>
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <p class="checkbox-text m-0">Immortal
-                                </p>
-                            </label>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="types">
-                    <div class="select">
-                        <h2>Герой</h2>
-                        <select name="" id="">
-                            <option value="" disabled selected>Любой</option>
-                        </select>
-                    </div>
-                    <div class="select">
-                        <h2>Ячейка</h2>
-                        <select name="" id="">
-                            <option value="" disabled selected>Любая</option>
-                        </select>
-                    </div>
-                    <div>
-                        <h2>Цена</h2>
-                        <div class="price">
-                            <input type="number" id="from" name="from" placeholder="от">
-                            <img src="@/assets/img/line.svg" alt="">
-                            <input type="number" id="to" name="to" placeholder="до">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </div>z
 
         <div class="catalog__body">
-            <div class="catalog__item green">
-                <img src="@/assets/img/catalog1.png" class="main" alt="">
-                <p>Fiery Soul of the Slayer</p>
+            <div class="catalog__item" v-if="sales" v-for="item in inventory.results" :key="item.id"
+                :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }" v-show="!item.for_sale">
+                <img :src="item.img" class="main" alt="">
+                <p>{{ item.name }} </p>
                 <div class="sale">
                     <div>
                         <div class="saleme">
                             <img src="@/assets/img/sale.svg" alt="">
-                            <img src="@/assets/img/salebanner.svg" class="banner" alt="" data-toggle="modal"
-                                data-target="#modalFirst">
+                            <img src="@/assets/img/salebanner.svg" class="banner" alt="" @click="openModal(item.id)">
                         </div>
-                        <img src="@/assets/img/salesteam.svg" data-toggle="modal" data-target="#steamModal" alt="">
                     </div>
 
-                    <span>19 800 ₸</span>
+                    <span>{{ item.price.toFixed(1).toLocaleString() }} ₸</span>
+                </div>
+            </div>
+            <div class="catalog__item" v-if="!sales" v-for="item in inventory" :key="item.id"
+                :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }" v-show="!item.for_sale">
+                <img :src="item.img" class="main" alt="">
+                <p>{{ item.name }} </p>
+                <div class="sale">
+                    <div>
+                        <div class="saleme">
+                            <img src="@/assets/img/sale.svg" alt="">
+                            <img src="@/assets/img/salebanner.svg" class="banner" alt="" @click="openModal2(item.id)">
+                        </div>
+                        <img src="@/assets/img/salesteam.svg" @click="openSteam2(item.id)" alt="">
+                    </div>
+
+                    <span>{{ item.sell_price.toFixed(1).toLocaleString() }} ₸</span>
                 </div>
             </div>
         </div>
-
+        <div class="text-center" v-if="sales">
+            <button ref="showmore" @click="loadMoreProducts">Показать еще</button>
+        </div>
     </div>
-    <ModalFirst></ModalFirst>
-    <SteamModal></SteamModal>
+    <ModalFirst :product="modal"></ModalFirst>
+    <SteamModal :product="modal"></SteamModal>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
             sort: false,
             filters: false,
+            pathUrl: 'https://dotashop.kz',
+            inventory: [],
+            kzt: null,
+            usd: null,
+            modal: {},
+            sales: true,
+            search: '',
         }
     },
     methods: {
+        loadMoreProducts() {
+            if (this.inventory.links.next) {
+                this.$refs.showmore.innerHTML = 'Загружаем'
+                axios
+                    .get(this.inventory.links.next)
+                    .then(response => {
+                        this.$refs.showmore.innerHTML = 'Показать еще'
+                        this.inventory.results.push(...response.data.results);
+                        this.inventory.links.next = response.data.links.next;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+            else {
+                this.$refs.showmore.innerHTML = 'Больше ничего нет (;'
+            }
+        },
+        openModal(id) {
+            this.modal = this.inventory.results.filter(item => item.id == id)[0];
+            $('#modalFirst').modal('show')
+
+        },
+        openSteam(id) {
+            this.modal = this.inventory.results.filter(item => item.id == id)[0];
+            $('#steamModal').modal('show')
+        },
+        openModal2(id) {
+            this.modal = this.inventory.filter(item => item.id == id)[0];
+            $('#modalFirst').modal('show')
+
+        },
+        openSteam2(id) {
+            this.modal = this.inventory.filter(item => item.id == id)[0];
+            $('#steamModal').modal('show')
+        },
+        getTrans() {
+            const url = `${this.pathUrl}/api/users/profile/`;
+            const token = this.getAuthorizationCookie();
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res);
+                    this.inventory = res.data.transactions_item.map(item => item.item);
+                });
+        },
+        getSteam() {
+            const url = `${this.pathUrl}/api/products/update-inventory`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    this.getInventory()
+
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
+        searchProducts() {
+            const query = this.search.trim();
+            if (query) {
+                const queryParams = `?search=${query}`;
+                this.fetchSearchResults(queryParams);
+            } else {
+                this.getInventory();
+            }
+        },
+        fetchSearchResults(queryParams) {
+            const path = `${this.pathUrl}/api/products/get-inventory${queryParams}`;
+            axios
+                .get(path)
+                .then(response => {
+                    this.inventory = response.data
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+
+        getInventory() {
+            const url = `${this.pathUrl}/api/products/get-inventory`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    this.inventory = res.data
+                })
+        },
         toggleFilter() {
             this.filters = !this.filters;
             if (this.filters) {
@@ -150,7 +205,18 @@ export default {
         stopPropagation(event) {
             event.stopPropagation();
         },
+    },
+    mounted() {
+        const accType = localStorage.getItem('accountType')
+
+        if (accType == 'steam' || accType == 'email') {
+            this.getInventory()
+        }
+        else {
+            this.$router.push('/register')
+        }
     }
+
 }
 </script>
 <script setup>
@@ -218,6 +284,7 @@ useSeoMeta({
             padding: 10px;
 
             .sale {
+                margin-top: auto;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -321,6 +388,10 @@ useSeoMeta({
         .buttons {
             display: flex;
             gap: 20px;
+
+            @media (max-width: 1024px) {
+                flex-direction: column;
+            }
         }
 
         .activeFil {
@@ -328,6 +399,7 @@ useSeoMeta({
         }
 
         .sort__body {
+            z-index: 10;
             position: absolute;
             left: 50.5%;
             top: 0;
@@ -361,6 +433,7 @@ useSeoMeta({
         }
 
         .filter__body {
+            z-index: 10;
             position: absolute;
             transform: scale(0);
             transition: all .3s ease;
@@ -481,8 +554,6 @@ useSeoMeta({
         }
 
         button {
-            flex: 1;
-            max-width: 195px;
             padding: 10px 20px;
             border: 1px solid var(--iris-100, #5D5FEF);
             background: var(--iris-100, #5D5FEF);
@@ -584,4 +655,5 @@ useSeoMeta({
     @media (max-width: 1024px) {
         margin-bottom: 22px !important;
     }
-}</style>
+}
+</style>

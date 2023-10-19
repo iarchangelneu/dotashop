@@ -1,38 +1,85 @@
 <template>
     <div class="page">
         <prevPage></prevPage>
-
-        <div class="item__body">
-            <div class="image__block">
-                <img src="@/assets/img/product1.png" class="img-fluid" alt="">
+        <div v-if="product.length <= 0"></div>
+        <div class="item__body" v-else>
+            <div class="image__block" :style="{ 'border': '2px solid #' + product.tags['Редкость'].color }">
+                <img :src="product.img" class="img-fluid" alt="">
             </div>
 
             <div class="description">
                 <div class="why">
-                    <h1>Draconic Divide</h1>
+                    <h1>{{ product.name }}</h1>
 
-                    <span>Герой: Dragon Knight</span>
-                    <span>Редкость: <small>Immortal</small></span>
-                    <span>Качество: Standard</span>
-                    <span>Слот: щит</span>
+                    <span>Герой: {{ product.tags['Герой'].name }}</span>
+                    <span>Редкость: <small :style="{ 'color': '#' + product.tags['Редкость'].color }">{{
+                        product.tags['Редкость'].name }}</small></span>
+                    <span :style="{ 'color': '#' + product.tags['Качество'].color }">Качество: {{
+                        product.tags['Качество'].name }}</span>
+                    <span>Слот: {{ product.tags['Ячейка'].name }}</span>
 
                     <div class="price">
-                        <p>13 990 ₸</p>
-                        <button>Купить</button>
+                        <p>{{ product.sell_price.toFixed(1).toLocaleString() }} ₸</p>
+                        <button ref="cart" @click="addCart">Купить</button>
                     </div>
                 </div>
-                <div class="desc" v-html="description"></div>
+                <div class="desc" v-html="product.descriptions"></div>
             </div>
         </div>
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
+            productId: this.$route.params.id,
+            product: [],
             description: 'Жар решимости Дэвиона ненадолго сливает воедино элементы и материю',
+            pathUrl: 'https://dotashop.kz',
+            catalog: [],
         }
-    }
+    },
+    methods: {
+        addCart() {
+            const url = `${this.pathUrl}/api/products/add-busket-item/${this.productId}`
+            const token = this.getAuthorizationCookie();
+
+            this.$refs.cart.innerHTML = 'Добавляем'
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+
+                    if (res.status == 201) {
+                        this.$refs.cart.innerHTML = 'Добавлен'
+                    }
+                    else (
+                        this.$refs.cart.innerHTML = 'Ошибка'
+                    )
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
+        getProduct() {
+            const url = `${this.pathUrl}/api/products/get-detail-item/${this.productId}`
+            axios
+                .get(url)
+                .then(response => {
+                    this.product = response.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+    },
+    mounted() {
+        this.getProduct()
+    },
 }
 </script>
 <script setup>
@@ -129,7 +176,7 @@ useSeoMeta({
                 }
 
                 button {
-                    padding: 10px 53px;
+                    padding: 10px 2.76vw;
                     border-radius: 10px;
                     border: 1px solid var(--iris-100, #5D5FEF);
                     background: var(--iris-100, #5D5FEF);
@@ -181,24 +228,26 @@ useSeoMeta({
                     margin: 0;
                 }
 
-                small {
-                    background: var(--Immortal, linear-gradient(180deg, #E4AE39 49.79%, rgba(74, 147, 255, 0.69) 100%));
-                    background-clip: text;
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
             }
         }
 
         .image__block {
             padding: 22px;
             border-radius: 10px;
-            border: 2px solid var(--Immortal, #E4AE39);
             background: linear-gradient(90deg, #24212B 0%, rgba(36, 33, 43, 0.65) 100%);
 
+            img {
+                width: 26.302vw;
+                object-fit: cover;
+            }
+
             @media (max-width: 1024px) {
+                width: 100%;
+
+
                 img {
                     width: 100%;
+                    height: 202px;
                 }
             }
         }

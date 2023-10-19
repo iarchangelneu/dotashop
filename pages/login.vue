@@ -13,21 +13,21 @@
             <div class="inputs">
                 <div>
                     <label for="email">Ваш e-mail</label>
-                    <input type="email" name="email" id="email" placeholder="E-mail">
+                    <input type="email" name="email" id="email" placeholder="E-mail" v-model="email">
                 </div>
                 <div>
                     <label for="password">пароль</label>
                     <div class="showpass">
                         <input :type="showPassword ? 'text' : 'password'" name="password" id="password"
-                            placeholder="Введите пароль">
-                        <img @click="togglePasswordVisibility('password-repeat')" src="@/assets/img/showpass.svg" alt=""
+                            placeholder="Введите пароль" v-model="password">
+                        <img @click="togglePasswordVisibility('password')" src="@/assets/img/showpass.svg" alt=""
                             srcset="" />
                     </div>
                 </div>
 
                 <div class="btns">
-                    <button>Войти</button>
-                    <button class="steam">
+                    <button @click="login()">Войти</button>
+                    <button class="steam" @click="loginSteam()">
                         <img src="@/assets/img/steam.svg" alt="">
                         <span>Войти через Steam</span>
                     </button>
@@ -42,13 +42,63 @@
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
+            pathUrl: 'https://dotashop.kz',
             showPassword: false,
+            email: '',
+            password: '',
         }
     },
     methods: {
+        login() {
+            const url = `${this.pathUrl}/api/users/authorization`
+
+            const csrf = this.getCSRFToken()
+
+            axios.defaults.headers.common['X-CSRFToken'] = csrf;
+
+            axios
+                .post(url, { username: this.email, password: this.password })
+                .then((res) => {
+
+
+
+                    document.cookie = `Authorization=${res.data.token}; expires=Fri, 31 Dec 2023 23:59:59 GMT; path=/`;
+                    localStorage.setItem('accountType', 'email')
+
+                    window.location.href = '/account'
+
+
+                    console.log(res)
+                })
+                .catch((error) => {
+                    console.log(error);
+                    // this.error = error.response.data.non_field_errors.toString()
+                });
+        },
+        loginSteam() {
+            const url = `${this.pathUrl}/api/users/login-steam/`
+
+            const csrf = this.getCSRFToken()
+
+            axios.defaults.headers.common['X-CSRFToken'] = csrf;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    window.location.href = res.data.url
+                })
+                .catch((error) => {
+                    this.error = error.response.data.detail
+                    console.log(error.response);
+                });
+        },
         togglePasswordVisibility(inputId) {
             const inputElement = document.getElementById(inputId);
             if (inputElement) {
@@ -57,6 +107,17 @@ export default {
             }
         },
     },
+    mounted() {
+        const accType = localStorage.getItem('accountType')
+
+        if (accType == 'steam' || accType == 'email') {
+            this.$router.push('/account')
+
+        }
+        else {
+
+        }
+    }
 }
 </script>
 <script setup>

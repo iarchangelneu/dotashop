@@ -65,130 +65,28 @@
         <div class="sales">
             <h1>Акции и скидки</h1>
             <p>Приобретайте товары по выгодным ценам</p>
-
-            <div class="sales__slider">
+            <div v-if="catalog.length <= 0"></div>
+            <div class="sales__slider" v-else>
                 <swiper :slides-per-view="6" :space-between="30" :navigation="navigation" :breakpoints="breakpoints"
                     :modules="modules">
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide green">
+                    <swiper-slide v-for="item in catalog.results.slice(0, 15)" :key="item.id">
+                        <NuxtLink :to="'/product/' + item.id" to="/product/1" class="slide"
+                            :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }">
                             <div class="image">
-                                <img src="@/assets/img/sale1.png" alt="">
+                                <img :src="item.img" alt="">
                             </div>
 
-                            <h2>Fiery Soul of the Slayer</h2>
+                            <h2>{{ item.name }}</h2>
 
                             <div class="price">
                                 <small>
-                                    22 800 ₸
+                                    {{ item.price.toFixed(1).toLocaleString() }} ₸
                                     <img src="@/assets/img/discount.svg" alt="">
                                 </small>
-                                <p>19 800 ₸</p>
+                                <p>{{ item.sell_price.toFixed(1).toLocaleString() }} ₸</p>
                             </div>
                         </NuxtLink>
                     </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide golden">
-                            <div class="image">
-                                <img src="@/assets/img/sale2.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide blackblue">
-                            <div class="image">
-                                <img src="@/assets/img/sale3.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide whiteblue">
-                            <div class="image">
-                                <img src="@/assets/img/sale4.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide calblue">
-                            <div class="image">
-                                <img src="@/assets/img/sale5.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide purple">
-                            <div class="image">
-                                <img src="@/assets/img/sale6.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide purple">
-                            <div class="image">
-                                <img src="@/assets/img/sale6.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-
                 </swiper>
 
                 <div class="navs">
@@ -231,125 +129,25 @@
             <h1>популярное</h1>
             <p>Посетите раздел, где быстро найдете самые популярные и стильные предметы, которые выбирают многие игроки</p>
 
-            <div class="sales__slider">
+            <div v-if="catalog.length <= 0"></div>
+            <div class="sales__slider" v-else>
                 <swiper :slides-per-view="6" :space-between="30" :navigation="navigation2" :breakpoints="breakpoints"
                     :modules="modules">
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide green">
+                    <swiper-slide v-for="item in catalog.results.slice(15, 30)" :key="item.id">
+                        <NuxtLink :to="'/product/' + item.id" to="/product/1" class="slide"
+                            :style="{ 'border': '2px solid #' + item.tags['Редкость'].color }">
                             <div class="image">
-                                <img src="@/assets/img/sale1.png" alt="">
+                                <img :src="item.img" alt="">
                             </div>
 
-                            <h2>Fiery Soul of the Slayer</h2>
+                            <h2>{{ item.name }}</h2>
 
                             <div class="price">
                                 <small>
-                                    22 800 ₸
+                                    {{ item.price.toFixed(1).toLocaleString() }} ₸
                                     <img src="@/assets/img/discount.svg" alt="">
                                 </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide golden">
-                            <div class="image">
-                                <img src="@/assets/img/sale2.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide blackblue">
-                            <div class="image">
-                                <img src="@/assets/img/sale3.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide whiteblue">
-                            <div class="image">
-                                <img src="@/assets/img/sale4.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide calblue">
-                            <div class="image">
-                                <img src="@/assets/img/sale5.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide purple">
-                            <div class="image">
-                                <img src="@/assets/img/sale6.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
-                            </div>
-                        </NuxtLink>
-                    </swiper-slide>
-                    <swiper-slide>
-                        <NuxtLink to="/product/1" class="slide purple">
-                            <div class="image">
-                                <img src="@/assets/img/sale6.png" alt="">
-                            </div>
-
-                            <h2>Fiery Soul of the Slayer</h2>
-
-                            <div class="price">
-                                <small>
-                                    22 800 ₸
-                                    <img src="@/assets/img/discount.svg" alt="">
-                                </small>
-                                <p>19 800 ₸</p>
+                                <p>{{ item.sell_price.toFixed(1).toLocaleString() }} ₸</p>
                             </div>
                         </NuxtLink>
                     </swiper-slide>
@@ -412,7 +210,10 @@ import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     components: {
         Swiper,
         SwiperSlide,
@@ -461,10 +262,22 @@ export default {
                 nextEl: '.next2',
                 prevEl: '.prev2'
             },
+            catalog: [],
         }
     },
     methods: {
+        getCatalog() {
+            const url = `${this.pathUrl}/api/products/catalog`
 
+            axios
+                .get(url)
+                .then(response => {
+                    this.catalog = response.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
         toggleCollapse(id) {
             const faq = this.faqs.find(f => f.id === id);
             faq.isOpen = !faq.isOpen;
@@ -499,6 +312,7 @@ export default {
         }
     },
     mounted() {
+        this.getCatalog()
         this.words.forEach(word => {
             const content = word.text;
 
@@ -889,6 +703,7 @@ useSeoMeta({
                 flex-direction: column;
                 max-width: 250px;
                 text-decoration: none;
+                height: 235px;
 
                 @media (max-width: 1024px) {
                     max-width: 100%;

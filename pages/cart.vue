@@ -2,69 +2,104 @@
     <div class="page">
         <PrevPage></PrevPage>
         <h1>подтверждение покупки</h1>
-        <!-- <div class="empty">
+        <div class="empty" v-if="cart.length <= 0">
             <h2>Вы пока не добавили предметы в корзину</h2>
             <NuxtLink to="/catalog">Перейти в магазин</NuxtLink>
-        </div> -->
-        <div class="cart__body">
+        </div>
+        <div class="cart__body" v-else>
             <div class="catalog__body">
-                <div class="catalog__item green">
-                    <img src="@/assets/img/closegray.svg" class="delete" alt="">
-                    <img src="@/assets/img/catalog1.png" alt="">
-                    <p>Fiery Soul of the Slayer</p>
+                <div class="catalog__item" v-for="item in cart" :key="item.id"
+                    :style="{ 'border': '2px solid #' + item.item.tags['Редкость'].color }">
+                    <img src="@/assets/img/closegray.svg" class="delete" alt="" @click="deleteItem(item.id)">
+                    <img :src="item.item.img" alt="">
+                    <p>{{ item.item.name }}</p>
                     <div class="text-right">
-                        <span>19 800 ₸</span>
-                    </div>
-                </div>
-                <div class="catalog__item purple">
-                    <img src="@/assets/img/closegray.svg" class="delete" alt="">
-                    <img src="@/assets/img/catalog1.png" alt="">
-                    <p>Fiery Soul of the Slayer</p>
-                    <div class="text-right">
-                        <span>19 800 ₸</span>
-                    </div>
-                </div>
-                <div class="catalog__item calblue">
-                    <img src="@/assets/img/closegray.svg" class="delete" alt="">
-                    <img src="@/assets/img/catalog1.png" alt="">
-                    <p>Fiery Soul of the Slayer</p>
-                    <div class="text-right">
-                        <span>19 800 ₸</span>
-                    </div>
-                </div>
-                <div class="catalog__item whiteblue">
-                    <img src="@/assets/img/closegray.svg" class="delete" alt="">
-                    <img src="@/assets/img/catalog1.png" alt="">
-                    <p>Fiery Soul of the Slayer</p>
-                    <div class="text-right">
-                        <span>19 800 ₸</span>
-                    </div>
-                </div>
-                <div class="catalog__item whiteblue">
-                    <img src="@/assets/img/closegray.svg" class="delete" alt="">
-                    <img src="@/assets/img/catalog1.png" alt="">
-                    <p>Fiery Soul of the Slayer</p>
-                    <div class="text-right">
-                        <span>19 800 ₸</span>
+                        <span>{{ item.item.sell_price.toFixed(1).toLocaleString() }} ₸</span>
                     </div>
                 </div>
             </div>
 
             <div class="cart__complete">
-                <span>КОЛИЧЕСТВО ТОВАРОВ: 4</span>
-                <span>иТОГО: 84 890 ₸ </span>
-                <button>Подтвердить заказ</button>
+                <span>КОЛИЧЕСТВО ТОВАРОВ: {{ cart.length }}</span>
+                <span>иТОГО: {{ totalAmount }} ₸ </span>
+                <button ref="purchases" @click="confirmPur()">Подтвердить заказ</button>
             </div>
         </div>
     </div>
 </template>
 <script>
+import global from '~/mixins/global';
+import axios from 'axios';
 export default {
+    mixins: [global],
     data() {
         return {
-
+            pathUrl: 'https://dotashop.kz',
+            cart: [],
         }
-    }
+    },
+    computed: {
+        totalAmount() {
+            return this.cart.reduce((total, item) => {
+                return total + item.item.sell_price;
+            }, 0).toFixed(1).toLocaleString();
+        },
+    },
+
+    methods: {
+        confirmPur() {
+            const url = `${this.pathUrl}/api/products/confirm-busket`
+            this.$refs.purchases.innerHTML = 'Покупаем'
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    console.log(res)
+                    this.getCart()
+                    this.$refs.purchases.innerHTML = 'Куплено'
+                })
+                .catch(error => {
+                    console.error(error.message);
+                    if (error.message == 'Request failed with status code 304') {
+                        this.$refs.purchases.innerHTML = 'Недостаточно средств'
+                    }
+                });
+        },
+        deleteItem(id) {
+            const url = `${this.pathUrl}/api/products/delete-busket-item/${id}`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    this.getCart()
+                })
+        },
+        getCart() {
+            const url = `${this.pathUrl}/api/users/profile/`
+
+            const token = this.getAuthorizationCookie();
+
+            axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+            axios
+                .get(url)
+                .then((res) => {
+                    this.balance = res.data.balance
+                    this.cart = res.data.basket
+                })
+        },
+    },
+    mounted() {
+        this.getCart()
+    },
 }
 </script>
 <script setup>
@@ -78,6 +113,15 @@ useSeoMeta({
 <style lang="scss" scoped>
 .page {
     padding: 73px 10.4vw 50px 200.006px;
+
+
+    @media (max-width: 1600px) {
+        padding: 73px 50px 50px 200px;
+    }
+
+    @media (max-width: 1024px) {
+        padding: 140px 20px 50px;
+    }
 
     .empty {
         display: flex;
@@ -125,11 +169,20 @@ useSeoMeta({
         justify-content: space-between;
         gap: 60px;
 
+        @media (max-width: 1024px) {
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .cart__complete {
             padding: 20px 20px 27px;
             border-radius: 10px;
             background: #292238;
             min-width: 345px;
+
+            @media (max-width: 1024px) {
+                width: 100%;
+            }
 
             span {
                 font-size: 20px;
@@ -143,6 +196,10 @@ useSeoMeta({
                 font-family: var(--mon);
                 color: #fff;
                 margin-bottom: 20px;
+
+                @media (max-width: 1024px) {
+                    font-size: 16px;
+                }
             }
 
             button {
